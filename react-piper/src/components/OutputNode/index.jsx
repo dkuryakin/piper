@@ -85,7 +85,9 @@ function Output({ value, handleId, nodeId }) {
 
     return (
         <div className="output">
+
             <Handle type="target" position="left" id={handleId} />
+
             <div className={'output-body'}>
                 <DelOutputButton nodeId={nodeId} handleId={handleId} />
                 <input className="nodrag" onChange={onChange} value={value} />
@@ -98,7 +100,9 @@ function OutputNode({ id, data }) {
     return (
         <div className={'output-node'}>
             <div className="header">
-                <Handle type="target" position="left" id={`${id}-output`} />
+              {
+                !data.output.length && <Handle type="target" position="left" id={`${id}-output`} />
+              }
                 <div><strong>{data.label}</strong></div>
                 <AddOutputButton nodeId={id} />
             </div>
