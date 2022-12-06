@@ -98,6 +98,7 @@ function OutputNode({ id, data }) {
     return (
         <div className={'output-node'}>
             <div className="header">
+                <Handle type="target" position="left" id={`${id}-output`} />
                 <div><strong>{data.label}</strong></div>
                 <AddOutputButton nodeId={id} />
             </div>

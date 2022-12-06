@@ -1,5 +1,5 @@
 import React from 'react';
-import {specToNodes, specToOptions} from "../../utils/spec";
+import {specToNodes} from "../../utils/spec";
 
 const spec = [
     {'func': 'read_image', 'input': {'filename': {'type': 'string'}, 'data': {'type': 'bytes'}}, 'output': {'type': 'array', 'value_type': {'type': 'tensor'}}},

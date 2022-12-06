@@ -38,7 +38,7 @@ const flowKey = 'flow';
 
 const getId = () => `dndnode_${uuid4()}`;
 
-const Editor = () => {
+const EditorWithNoProvider = () => {
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -65,14 +65,17 @@ const Editor = () => {
         };
 
         restoreFlow();
-    }, [setNodes, setViewport, setEdges, nodes]);
+    }, [setNodes, setViewport, setEdges]);
 
     const onConnect = useCallback((params) => setEdges((eds) => {
         const source = nodes.filter(node => node.id === params.source)[0];
         const target = nodes.filter(node => node.id === params.target)[0];
 
         if (target.data.type === 'map_input') {
-            const item_spec = source.data.output.value_type;
+            let item_spec = source.data.output.value_type;
+            if (params.sourceHandle) {
+                item_spec = source.data.extra_output.filter(({handleId}) => handleId === params.sourceHandle)[0].spec.value_type;
+            }
             setNodes(nodes => nodes.map(node => {
                 if (node.id === target.id) {
                     return {
@@ -99,7 +102,7 @@ const Editor = () => {
     const onDragOver = useCallback((event) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
-    }, [nodes]);
+    }, []);
 
     const getParentNode = useCallback((position) => {
         for (let i = nodes.length - 1; i >= 0; i--) {
@@ -231,5 +234,13 @@ const Editor = () => {
         </div>
     );
 };
+
+const Editor = () => {
+    return (
+        <ReactFlowProvider>
+            <EditorWithNoProvider/>
+        </ReactFlowProvider>
+    )
+}
 
 export default Editor;

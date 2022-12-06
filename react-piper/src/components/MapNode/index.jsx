@@ -38,6 +38,10 @@ function MapNode({ id, data }) {
                 return {
                     ...node,
                     ...size,
+                    data: {
+                        ...node.data,
+                        ...size,
+                    }
                 };
             }
             return node;

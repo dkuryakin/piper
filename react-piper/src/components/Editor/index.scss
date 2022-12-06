@@ -19,6 +19,14 @@
   .react-flow__node-default, .react-flow__node-input, .react-flow__node-output, .react-flow__node-group {
     //width: auto;
   }
+
+  .react-flow__handle-connecting {
+    background: #ff6060;
+  }
+
+  .react-flow__handle-valid {
+    background: #55dd99;
+  }
 }
 
 .dndflow aside {
@@ -71,7 +79,7 @@
   }
 
   .dndflow aside {
-    width: 20%;
+    //width: 20%;
     max-width: 250px;
   }
 }

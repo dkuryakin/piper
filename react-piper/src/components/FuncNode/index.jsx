@@ -2,11 +2,12 @@ import React, { memo } from 'react';
 import { Handle, useReactFlow, useStoreApi } from 'reactflow';
 import './index.scss';
 import { v4 as uuid4 } from 'uuid';
-import {specToOptions, specToStr} from "../../utils/spec";
+import {specToOptions, specToStr, isValidConnection} from "../../utils/spec";
 
 
 function AddOutputButton({ nodeId, spec }) {
     const options = specToOptions(spec);
+    const val = Object.keys(options)[0];
 
     const { setNodes } = useReactFlow();
     const store = useStoreApi();
@@ -20,7 +21,7 @@ function AddOutputButton({ nodeId, spec }) {
                         ...node.data,
                         extra_output: [
                             ...node.data.extra_output,
-                            {name: '', handleId: uuid4()},
+                            {name: val, handleId: uuid4(), spec: options[val]},
                         ],
                     };
                 }
@@ -31,7 +32,7 @@ function AddOutputButton({ nodeId, spec }) {
     };
 
     return (
-        <button className={'nodrag add-output btn'} onClick={onAddOutput} disabled={options.length === 0}>+</button>
+        <button className={'nodrag add-output btn'} onClick={onAddOutput} disabled={Object.keys(options).length === 0}>+</button>
     );
 }
 
@@ -70,7 +71,7 @@ function InputParam({ name, spec, handleId, nodeId }) {
 
     return (
         <div className="input-param">
-            <Handle type="target" position="left" id={handleId} />
+            <Handle type="target" position="left" id={handleId} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
             <div className={'input-param-body'}>
                 {name}: {specToStr(spec)}
             </div>
@@ -89,7 +90,7 @@ function Output({ spec, handleId, nodeId }) {
             <div className={'output-body'}>
                 {specToStr(spec)}
             </div>
-            <Handle type="source" position="right" id={handleId} />
+            <Handle type="source" position="right" id={handleId} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
         </div>
     );
 }
@@ -97,7 +98,6 @@ function Output({ spec, handleId, nodeId }) {
 
 function ExtraOutput({ value, spec, handleId, nodeId }) {
     const options = specToOptions(spec);
-    const val = value || options[0];
 
     const { setNodes } = useReactFlow();
     const store = useStoreApi();
@@ -105,24 +105,27 @@ function ExtraOutput({ value, spec, handleId, nodeId }) {
 
     const onChange = (evt) => {
         const { nodeInternals } = store.getState();
-        setNodes(
-            Array.from(nodeInternals.values()).map((node) => {
-                if (node.id === nodeId) {
-                    node.data = {
+        const _nodes = Array.from(nodeInternals.values()).map((node) => {
+            if (node.id === nodeId) {
+                return {
+                    ...node,
+                    data: {
                         ...node.data,
                         extra_output: node.data.extra_output.map(({name, handleId}) => ({
                             name: hId === handleId ? evt.target.value : name,
                             handleId,
+                            spec: options[hId === handleId ? evt.target.value : name],
                         })),
-                    };
-                }
+                    }
+                };
+            }
 
-                return node;
-            })
-        );
+            return node;
+        });
+        setNodes(_nodes);
     };
 
-    if (options.length === 0) {
+    if (Object.keys(options).length === 0) {
         return '';
     }
 
@@ -131,22 +134,23 @@ function ExtraOutput({ value, spec, handleId, nodeId }) {
             <div className={'extra-output-body'}>
                 <DelOutputButton nodeId={nodeId} handleId={handleId} />
                 <div className={'options'}>
-                    <select className="nodrag" onChange={onChange} value={val}>
-                        {options.map(option => (
+                    <select className="nodrag" onChange={onChange} value={value}>
+                        {Object.keys(options).map(option => (
                             <option value={option} key={option}>{option}</option>
                         ))}
                     </select>
-                    {[...val.matchAll(/\[([^\]]+)]/g)].map((param, i) => {
+                    {[...value.matchAll(/\[([^\]]+)]/g)].map((param, i) => {
                         const type = param[1];  // i, key, ...
                         if (type === 'i') {
                             return (
                                 <input key={i} className="nodrag mt5" min="0" step="1" type={'number'}/>
                             );
                         }
+                        return '';
                     })}
                 </div>
             </div>
-            <Handle type="source" position="right" id={handleId} />
+            <Handle type="source" position="right" id={handleId} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
         </div>
     );
 }
@@ -166,7 +170,7 @@ function FuncNode({ id, data }) {
                         nodeId={id}
                         name={param_name}
                         spec={data.input[param_name]}
-                        handleId={`func-node-${id}-input-${param_name}`}
+                        handleId={`func-node-${id}-input.${param_name}`}
                     />
                 ))}
             </div>

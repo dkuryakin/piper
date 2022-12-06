@@ -1,8 +1,8 @@
-import React, { memo } from 'react';
+import React, {memo, useCallback} from 'react';
 import { Handle, useReactFlow, useStoreApi } from 'reactflow';
 import './index.scss';
 import { v4 as uuid4 } from 'uuid';
-
+import {isValidConnection} from "../../utils/spec";
 
 
 function AddInputButton({ nodeId }) {
@@ -95,7 +95,7 @@ function Input({ value, handleId, nodeId }) {
 }
 
 function InputNode({ id, data }) {
-    console.log(data)
+    const store = useStoreApi();
 
     return (
         <div className={'input-node'}>
@@ -110,7 +110,7 @@ function InputNode({ id, data }) {
             </div>
             {data.type === 'map_input' ? (
                 <div className={'map-input'}>
-                    <Handle type="target" position="left" id={`${id}-map-input`} />
+                    <Handle type="target" position="left" id={`${id}-map-input`} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
                 </div>
             ) : ''}
         </div>
