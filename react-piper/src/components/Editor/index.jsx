@@ -21,6 +21,7 @@ import MapNode from '../MapNode';
 import OutputNode from '../OutputNode';
 import {v4 as uuid4} from 'uuid';
 import {SaveControls} from '../SaveControls/SaveControls';
+import {DownloadButton, DownloadPipelineImage} from '../DownloadPipelineImage/DownloadPipelineImage';
 
 
 const nodeTypes = {
@@ -184,6 +185,7 @@ const EditorWithNoProvider = () => {
     <div className="dndflow">
       <Sidebar/>
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+        <DownloadPipelineImage />
         <ReactFlow
           nodes={nodes}
           edges={edges}

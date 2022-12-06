@@ -77,28 +77,28 @@ export const SaveControls = ({reactFlowInstance, setNodes, setEdges}) => {
     <div className="save-controls">
       <div className="save-controls__item">
         <input
-          className="save-controls__input"
+          className="default-input"
           type="text"
           placeholder="Введите название"
           value={pipelineName}
           onChange={onChangeInput}
         />
-        <button className="save-controls__button" onClick={onSave}>save</button>
+        <button className="default-button save-controls__button" onClick={onSave}>save</button>
       </div>
       <div className="save-controls__item">
         <label className="save-controls__label">
           Select pipeline name:
           <div className="save-controls__select-box">
             <select
-              className="save-controls__select"
+              className="default-input"
               onChange={onChangeSelect}
               value={selectedPipelineName}
             >
               {pipelineNames.map((name) => <option key={uuidv4()} value={name}>{name}</option>)}
             </select>
             <div className="save-controls__buttons">
-              <button className="save-controls__button" onClick={onRestore}>restore</button>
-              <button className="save-controls__button" onClick={onDelete}>delete</button>
+              <button className="default-button save-controls__button" onClick={onRestore}>restore</button>
+              <button className="default-button save-controls__button" onClick={onDelete}>delete</button>
             </div>
           </div>
         </label>

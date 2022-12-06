@@ -1,18 +1,19 @@
 .save-controls {
-  position: relative;
+  position: absolute;
   z-index: 5;
-  margin-right: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  right: 10px;
+  top: 55px;
 
   &__label {
     width: 100%;
+    color: #FFFFFF;
   }
 
   &__item {
     display: flex;
-    align-items: flex-start;
     max-width: 250px;
     width: 100%;
 
@@ -34,15 +35,5 @@
   &__select-box {
     display: flex;
     align-items: center;
-  }
-
-  &__select,
-  &__input {
-    max-width: 150px;
-    width: 100%;
-    margin: 0;
-    padding: 0 5px;
-    border: 1px solid black;
-    min-height: 20px;
   }
 }
