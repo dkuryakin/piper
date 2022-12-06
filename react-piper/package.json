@@ -10,10 +10,12 @@
     "react-dom": "^18.2.0",
     "react-resizable": "^3.0.4",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.1",
     "react-use-keypress": "^1.3.1",
     "reactflow": "^11.3.2",
     "sass": "^1.56.1",
     "uuid": "^9.0.0",
+    "uuidv4": "^6.2.13",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -1,11 +1,14 @@
 import './App.scss';
-import Editor from "./components/Editor";
+import "react-toastify/dist/ReactToastify.css";
+import Editor from './components/Editor';
+import {ToastContainer} from 'react-toastify';
 
 function App() {
   return (
-      <div className="App">
-          <Editor/>
-      </div>
+    <div className="App">
+      <ToastContainer/>
+      <Editor/>
+    </div>
   );
 }
 
