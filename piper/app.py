@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from functools import cache
 from importlib import import_module
 
 import uvicorn
@@ -11,6 +12,7 @@ app = FastAPI()
 
 
 @app.get("/specs.json")
+@cache
 def get_specs():
     return generate_specs()
 
