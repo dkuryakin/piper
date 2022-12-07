@@ -12,7 +12,7 @@ async def resolve_args(args: Any) -> Any:
             for arg in args
         ]
     if isinstance(args, tuple):
-        return (
+        return tuple(
             await resolve_args(arg)
             for arg in args
         )
