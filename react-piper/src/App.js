@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App">
       <ToastContainer/>
-      <Editor specs_base_url={specs_url} />
+      <Editor specs_url={specs_url} />
     </div>
   );
 }
