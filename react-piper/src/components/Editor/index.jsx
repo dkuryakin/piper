@@ -38,7 +38,7 @@ const edgeTypes = {
 
 const getId = () => `dndnode_${uuid4()}`;
 
-const EditorWithNoProvider = ({specs_base_url}) => {
+const EditorWithNoProvider = ({specs_url}) => {
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -193,7 +193,7 @@ const EditorWithNoProvider = ({specs_base_url}) => {
 
     return (
         <div className="dndflow">
-            <Sidebar specs_base_url={specs_base_url}/>
+            <Sidebar specs_url={specs_url}/>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                 <DownloadPipelineImage />
                 <ReactFlow
@@ -225,10 +225,10 @@ const EditorWithNoProvider = ({specs_base_url}) => {
     );
 };
 
-const Editor = ({specs_base_url}) => {
+const Editor = ({specs_url}) => {
     return (
         <ReactFlowProvider>
-            <EditorWithNoProvider specs_base_url={specs_base_url}/>
+            <EditorWithNoProvider specs_url={specs_url}/>
         </ReactFlowProvider>
     )
 }
