@@ -8,6 +8,9 @@ RUN yarn install
 
 COPY . .
 
+ARG SPECS_URL
+ENV REACT_APP_SPECS_URL=$SPECS_URL
+
 RUN yarn build
 
 FROM nginx:1.23.2-alpine

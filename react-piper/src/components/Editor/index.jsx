@@ -38,7 +38,7 @@ const flowKey = 'flow';
 
 const getId = () => `dndnode_${uuid4()}`;
 
-const EditorWithNoProvider = () => {
+const EditorWithNoProvider = ({specs_url}) => {
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -227,7 +227,7 @@ const EditorWithNoProvider = () => {
 
     return (
         <div className="dndflow">
-            <Sidebar/>
+            <Sidebar specs_base_url={specs_url}/>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                 <ReactFlow
                     nodes={nodes}
@@ -256,10 +256,10 @@ const EditorWithNoProvider = () => {
     );
 };
 
-const Editor = () => {
+const Editor = ({specs_url}) => {
     return (
         <ReactFlowProvider>
-            <EditorWithNoProvider/>
+            <EditorWithNoProvider specs_base_url={specs_url}/>
         </ReactFlowProvider>
     )
 }
