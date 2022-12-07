@@ -1,7 +1,7 @@
-import React from 'react';
-import {specToNodes, specToOptions} from "../../utils/spec";
+import React, {useEffect, useState} from 'react';
+import {specToNodes} from "../../utils/spec";
 
-const spec = [
+const specMock = [
     {'func': 'read_image', 'input': {'filename': {'type': 'string'}, 'data': {'type': 'bytes'}}, 'output': {'type': 'array', 'value_type': {'type': 'tensor'}}},
     {'func': 'find_documents', 'input': {'image': {'type': 'tensor'}}, 'output': {'type': 'array', 'value_type': {'type': 'object', 'value_type': {'image': {'type': 'tensor'}, 'coords': {'type': 'array', 'value_type': {'type': 'tuple', 'value_type': [{'type': 'integer'}, {'type': 'integer'}]}}}}}},
     {'func': 'enrich_list', 'input': {'items': {'type': 'array', 'value_type': {'type': 'any'}}}, 'output': {'type': 'array', 'value_type': {'type': 'dict', 'key_type': {'type': 'string'}, 'value_type': {'type': 'any'}}}},
@@ -10,7 +10,8 @@ const spec = [
     {'func': 'ocr', 'input': {'image': {'type': 'tensor'}, 'document_type': {'type': 'string'}, 'field_name': {'type': 'string'}}, 'output': {'type': 'object', 'value_type': {'text': {'type': 'string'}, 'confidence': {'type': 'float'}}}},
     {'func': 'ocr_many', 'input': {'images': {'type': 'array', 'value_type': {'type': 'tensor'}}, 'document_type': {'type': 'string'}, 'field_name': {'type': 'string'}}, 'output': {'type': 'object', 'value_type': {'text': {'type': 'string'}, 'confidence': {'type': 'float'}}}},
 ]
-const nodeSpecs = [
+
+const nodeSpec = [
     {
         label: 'Input',
         type: 'input',
@@ -27,28 +28,47 @@ const nodeSpecs = [
         func: 'map',
         width: 203,
         height: 123,
+        zIndex: -1,
     },
-    ...specToNodes(spec),
 ]
-const Sidebar = () => {
+
+const Sidebar = ({specs_url}) => {
+    const [specs, setSpecs] = useState(null);
+
     const onDragStart = (event, nodeSpec) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeSpec));
         event.dataTransfer.effectAllowed = 'move';
     };
+
+    useEffect(() => {
+        if (!specs_url) {
+            return setSpecs([
+                ...nodeSpec,
+                ...specToNodes(specMock),
+            ]);
+        }
+
+        fetch(specs_url).then(res => res.json()).then(spec => setSpecs([
+            ...nodeSpec,
+            ...specToNodes(spec),
+        ]))
+    }, [setSpecs, specs_url])
+
     return (
-      <aside>
-          <div className="description">Functions</div>
-          {nodeSpecs.map((nodeSpec, i) => (
-            <div
-              className={`dndnode ${nodeSpec.type}`}
-              onDragStart={(event) => onDragStart(event, nodeSpec)}
-              draggable
-              key={i}
-            >
-                {nodeSpec.label}
-            </div>
-          ))}
-      </aside>
+        <aside>
+            <div className="description">Functions</div>
+            {specs === null ? '' : specs.map((nodeSpec, i) => (
+                <div
+                    className={`dndnode ${nodeSpec.type}`}
+                    onDragStart={(event) => onDragStart(event, nodeSpec)}
+                    draggable
+                    key={i}
+                >
+                    {nodeSpec.label}
+                </div>
+            ))}
+        </aside>
     );
 };
+
 export default Sidebar;

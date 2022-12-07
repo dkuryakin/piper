@@ -1,24 +1,25 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import useKeypress from 'react-use-keypress';
 import {generateSpec} from "../../utils/serialize";
 import ReactFlow, {
-  addEdge,
-  Controls,
-  MarkerType,
-  ReactFlowProvider,
-  SmoothStepEdge,
-  useEdgesState,
-  useNodesState,
+    addEdge,
+    Controls,
+    MarkerType,
+    ReactFlowProvider,
+    SmoothStepEdge,
+    useEdgesState,
+    useNodesState,
+    useReactFlow
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import Sidebar from '../Sidebar';
 
 import './index.scss';
-import InputNode from '../InputNode';
-import FuncNode from '../FuncNode';
-import MapNode from '../MapNode';
-import OutputNode from '../OutputNode';
+import InputNode from "../InputNode";
+import FuncNode from "../FuncNode";
+import MapNode from "../MapNode";
+import OutputNode from "../OutputNode";
 import {v4 as uuid4} from 'uuid';
 import {SaveControls} from '../SaveControls/SaveControls';
 import {DownloadPipelineImage} from '../DownloadPipelineImage/DownloadPipelineImage';
