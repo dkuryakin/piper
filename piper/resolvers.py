@@ -6,16 +6,11 @@ async def resolve_args(args: Any) -> Any:
     """Resolve awaitable nested args"""
     if isawaitable(args):
         args = await args
-    if isinstance(args, (list, set)):
-        return [
+    if isinstance(args, (list, set, tuple)):
+        return type(args)([
             await resolve_args(arg)
             for arg in args
-        ]
-    if isinstance(args, tuple):
-        return tuple(
-            await resolve_args(arg)
-            for arg in args
-        )
+        ])
     if isinstance(args, dict):
         return {
             key: await resolve_args(val)
