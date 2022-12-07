@@ -27,6 +27,10 @@
   .react-flow__handle-valid {
     background: #55dd99;
   }
+
+  .react-flow__node-group {
+    z-index: -1!important;
+  }
 }
 
 .dndflow aside {

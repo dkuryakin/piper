@@ -28,6 +28,7 @@ const nodeSpecs = [
         func: 'map',
         width: 203,
         height: 123,
+        zIndex: -1,
     },
     ...specToNodes(spec),
 ]

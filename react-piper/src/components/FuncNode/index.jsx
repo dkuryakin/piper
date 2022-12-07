@@ -1,19 +1,19 @@
-import React, { memo } from 'react';
-import { Handle, useReactFlow, useStoreApi } from 'reactflow';
+import React, {memo} from 'react';
+import {Handle, useReactFlow, useStoreApi} from 'reactflow';
 import './index.scss';
-import { v4 as uuid4 } from 'uuid';
-import {specToOptions, specToStr, isValidConnection} from "../../utils/spec";
+import {v4 as uuid4} from 'uuid';
+import {isValidConnection, specToOptions, specToStr} from "../../utils/spec";
 
 
-function AddOutputButton({ nodeId, spec }) {
+function AddOutputButton({nodeId, spec}) {
     const options = specToOptions(spec);
     const val = Object.keys(options)[0];
 
-    const { setNodes } = useReactFlow();
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
 
     const onAddOutput = () => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
@@ -32,17 +32,18 @@ function AddOutputButton({ nodeId, spec }) {
     };
 
     return (
-        <button className={'nodrag add-output btn'} onClick={onAddOutput} disabled={Object.keys(options).length === 0}>+</button>
+        <button className={'nodrag add-output btn'} onClick={onAddOutput}
+                disabled={Object.keys(options).length === 0}>+</button>
     );
 }
 
-function DelOutputButton({ nodeId, handleId }) {
-    const { setNodes } = useReactFlow();
+function DelOutputButton({nodeId, handleId}) {
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
     const hId = handleId;
 
     const onDelInput = () => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
@@ -63,15 +64,13 @@ function DelOutputButton({ nodeId, handleId }) {
 }
 
 
-
-function InputParam({ name, spec, handleId, nodeId }) {
-    const { setNodes } = useReactFlow();
+function InputParam({name, spec, handleId, nodeId}) {
     const store = useStoreApi();
-    const hId = handleId;
 
     return (
         <div className="input-param">
-            <Handle type="target" position="left" id={handleId} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
+            <Handle type="target" position="left" id={handleId}
+                    isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
             <div className={'input-param-body'}>
                 {name}: {specToStr(spec)}
             </div>
@@ -79,10 +78,8 @@ function InputParam({ name, spec, handleId, nodeId }) {
     );
 }
 
-function Output({ spec, handleId, nodeId }) {
-    const { setNodes } = useReactFlow();
+function Output({spec, handleId, nodeId}) {
     const store = useStoreApi();
-    const hId = handleId;
 
     return (
         <div className="output">
@@ -90,21 +87,22 @@ function Output({ spec, handleId, nodeId }) {
             <div className={'output-body'}>
                 {specToStr(spec)}
             </div>
-            <Handle type="source" position="right" id={handleId} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
+            <Handle type="source" position="right" id={handleId}
+                    isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
         </div>
     );
 }
 
 
-function ExtraOutput({ value, spec, handleId, nodeId }) {
+function ExtraOutput({value, spec, handleId, nodeId}) {
     const options = specToOptions(spec);
 
-    const { setNodes } = useReactFlow();
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
     const hId = handleId;
 
     const onChange = (evt) => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         const _nodes = Array.from(nodeInternals.values()).map((node) => {
             if (node.id === nodeId) {
                 return {
@@ -132,7 +130,7 @@ function ExtraOutput({ value, spec, handleId, nodeId }) {
     return (
         <div className="extra-output">
             <div className={'extra-output-body'}>
-                <DelOutputButton nodeId={nodeId} handleId={handleId} />
+                <DelOutputButton nodeId={nodeId} handleId={handleId}/>
                 <div className={'options'}>
                     <select className="nodrag" onChange={onChange} value={value}>
                         {Object.keys(options).map(option => (
@@ -150,14 +148,14 @@ function ExtraOutput({ value, spec, handleId, nodeId }) {
                     })}
                 </div>
             </div>
-            <Handle type="source" position="right" id={handleId} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
+            <Handle type="source" position="right" id={handleId}
+                    isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
         </div>
     );
 }
 
 
-
-function FuncNode({ id, data }) {
+function FuncNode({id, data}) {
     return (
         <div className={'func-node'}>
             <div className="header">
@@ -177,10 +175,10 @@ function FuncNode({ id, data }) {
             <Output
                 nodeId={id}
                 spec={data.output}
-                id={`func-node-${id}-output`}
+                handleId={`func-node-${id}-output`}
             />
             {data.extra_output.map(({name, handleId}) => (
-                <ExtraOutput key={handleId} nodeId={id} value={name} spec={data.output} handleId={handleId} />
+                <ExtraOutput key={handleId} nodeId={id} value={name} spec={data.output} handleId={handleId}/>
             ))}
         </div>
     );

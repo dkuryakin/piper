@@ -1,16 +1,16 @@
-import React, {memo, useCallback} from 'react';
-import { Handle, useReactFlow, useStoreApi } from 'reactflow';
+import React, {memo} from 'react';
+import {Handle, useReactFlow, useStoreApi} from 'reactflow';
 import './index.scss';
-import { v4 as uuid4 } from 'uuid';
+import {v4 as uuid4} from 'uuid';
 import {isValidConnection} from "../../utils/spec";
 
 
-function AddInputButton({ nodeId }) {
-    const { setNodes } = useReactFlow();
+function AddInputButton({nodeId}) {
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
 
     const onAddInput = () => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
@@ -33,13 +33,13 @@ function AddInputButton({ nodeId }) {
     );
 }
 
-function DelInputButton({ nodeId, handleId }) {
-    const { setNodes } = useReactFlow();
+function DelInputButton({nodeId, handleId}) {
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
     const hId = handleId;
 
     const onDelInput = () => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
@@ -59,13 +59,13 @@ function DelInputButton({ nodeId, handleId }) {
     );
 }
 
-function Input({ value, handleId, nodeId }) {
-    const { setNodes } = useReactFlow();
+function Input({value, handleId, nodeId}) {
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
     const hId = handleId;
 
     const onChange = (evt) => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
@@ -86,31 +86,32 @@ function Input({ value, handleId, nodeId }) {
     return (
         <div className="input">
             <div className={'input-body'}>
-                <DelInputButton nodeId={nodeId} handleId={handleId} />
-                <input className="nodrag" onChange={onChange} value={value} />
+                <DelInputButton nodeId={nodeId} handleId={handleId}/>
+                <input className="nodrag" onChange={onChange} value={value}/>
             </div>
-            <Handle type="source" position="right" id={handleId} />
+            <Handle type="source" position="right" id={handleId}/>
         </div>
     );
 }
 
-function InputNode({ id, data }) {
+function InputNode({id, data}) {
     const store = useStoreApi();
 
     return (
         <div className={'input-node'}>
             <div className="header">
                 <div><strong>{data.label}</strong></div>
-                <AddInputButton nodeId={id} />
+                <AddInputButton nodeId={id}/>
             </div>
             <div className="body">
                 {data.input.map(({name, handleId}) => (
-                    <Input key={handleId} nodeId={id} value={name} handleId={handleId} />
+                    <Input key={handleId} nodeId={id} value={name} handleId={handleId}/>
                 ))}
             </div>
             {data.type === 'map_input' ? (
                 <div className={'map-input'}>
-                    <Handle type="target" position="left" id={`${id}-map-input`} isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))} />
+                    <Handle type="target" position="left" id={`${id}-map-input`}
+                            isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
                 </div>
             ) : ''}
         </div>

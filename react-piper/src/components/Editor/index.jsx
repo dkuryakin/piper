@@ -1,13 +1,15 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import useKeypress from 'react-use-keypress';
-
+import {generateSpec} from "../../utils/serialize";
 import ReactFlow, {
-    ReactFlowProvider,
     addEdge,
-    useNodesState,
-    useEdgesState,
     Controls,
-    MarkerType, SmoothStepEdge, useReactFlow, Position
+    MarkerType,
+    ReactFlowProvider,
+    SmoothStepEdge,
+    useEdgesState,
+    useNodesState,
+    useReactFlow
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -18,9 +20,7 @@ import InputNode from "../InputNode";
 import FuncNode from "../FuncNode";
 import MapNode from "../MapNode";
 import OutputNode from "../OutputNode";
-import { v4 as uuid4 } from 'uuid';
-import {specToStr} from "../../utils/spec";
-
+import {v4 as uuid4} from 'uuid';
 
 
 const nodeTypes = {
@@ -43,7 +43,9 @@ const EditorWithNoProvider = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
-    const { setViewport } = useReactFlow();
+    const {setViewport} = useReactFlow();
+
+    const nodeExists = (nodes, nodeId) => nodes.filter(node => node.id === nodeId).length > 0
 
     const onSave = useCallback(() => {
         if (reactFlowInstance) {
@@ -57,10 +59,10 @@ const EditorWithNoProvider = () => {
             const flow = JSON.parse(localStorage.getItem(flowKey));
 
             if (flow) {
-                const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+                const {x = 0, y = 0, zoom = 1} = flow.viewport;
                 setNodes(flow.nodes || []);
                 setEdges(flow.edges || []);
-                setViewport({ x, y, zoom });
+                setViewport({x, y, zoom});
             }
         };
 
@@ -72,10 +74,14 @@ const EditorWithNoProvider = () => {
         const target = nodes.filter(node => node.id === params.target)[0];
 
         if (target.data.type === 'map_input') {
-            let item_spec = source.data.output.value_type;
-            if (params.sourceHandle) {
-                item_spec = source.data.extra_output.filter(({handleId}) => handleId === params.sourceHandle)[0].spec.value_type;
+            let item_spec;
+            item_spec = source.data.extra_output.filter(({handleId}) => handleId === params.sourceHandle);
+            if (item_spec.length === 0) {
+                item_spec = source.data.output.value_type;
+            } else {
+                item_spec = item_spec[0].spec.value_type;
             }
+
             setNodes(nodes => nodes.map(node => {
                 if (node.id === target.id) {
                     return {
@@ -201,13 +207,27 @@ const EditorWithNoProvider = () => {
     }
 
     useKeypress('Delete', () => {
-        setNodes(nodes => deleteNode(nodes));
-        setEdges(edges => edges.filter(edge => !edge.selected));
+        setNodes(nodes => {
+            const _nodes = deleteNode(nodes);
+            setEdges(edges => edges.filter(edge => !edge.selected && nodeExists(_nodes, edge.source) && nodeExists(_nodes, edge.target)));
+            return _nodes;
+        });
     });
+
+    const exportSpec = (nodes, edges) => {
+        const spec = JSON.stringify(generateSpec(nodes, edges));
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(spec));
+        element.setAttribute('download', `spec-${new Date().getTime()}.json`);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
 
     return (
         <div className="dndflow">
-            <Sidebar />
+            <Sidebar/>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                 <ReactFlow
                     nodes={nodes}
@@ -224,8 +244,9 @@ const EditorWithNoProvider = () => {
                     connectionLineType={'smoothstep'}
 
                 >
-                    <Controls />
+                    <Controls/>
                     <div className="save-controls">
+                        <button onClick={() => exportSpec(nodes, edges)}>export</button>
                         <button onClick={onSave}>save</button>
                         <button onClick={onRestore}>restore</button>
                     </div>
