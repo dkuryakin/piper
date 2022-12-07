@@ -1,5 +1,5 @@
 import React from 'react';
-import {specToNodes} from "../../utils/spec";
+import {specToNodes, specToOptions} from "../../utils/spec";
 
 const spec = [
     {'func': 'read_image', 'input': {'filename': {'type': 'string'}, 'data': {'type': 'bytes'}}, 'output': {'type': 'array', 'value_type': {'type': 'tensor'}}},
@@ -10,7 +10,6 @@ const spec = [
     {'func': 'ocr', 'input': {'image': {'type': 'tensor'}, 'document_type': {'type': 'string'}, 'field_name': {'type': 'string'}}, 'output': {'type': 'object', 'value_type': {'text': {'type': 'string'}, 'confidence': {'type': 'float'}}}},
     {'func': 'ocr_many', 'input': {'images': {'type': 'array', 'value_type': {'type': 'tensor'}}, 'document_type': {'type': 'string'}, 'field_name': {'type': 'string'}}, 'output': {'type': 'object', 'value_type': {'text': {'type': 'string'}, 'confidence': {'type': 'float'}}}},
 ]
-
 const nodeSpecs = [
     {
         label: 'Input',
@@ -31,28 +30,25 @@ const nodeSpecs = [
     },
     ...specToNodes(spec),
 ]
-
 const Sidebar = () => {
     const onDragStart = (event, nodeSpec) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeSpec));
         event.dataTransfer.effectAllowed = 'move';
     };
-
     return (
-        <aside>
-            <div className="description">Functions</div>
-            {nodeSpecs.map((nodeSpec, i) => (
-                <div
-                    className={`dndnode ${nodeSpec.type}`}
-                    onDragStart={(event) => onDragStart(event, nodeSpec)}
-                    draggable
-                    key={i}
-                >
-                    {nodeSpec.label}
-                </div>
-            ))}
-        </aside>
+      <aside>
+          <div className="description">Functions</div>
+          {nodeSpecs.map((nodeSpec, i) => (
+            <div
+              className={`dndnode ${nodeSpec.type}`}
+              onDragStart={(event) => onDragStart(event, nodeSpec)}
+              draggable
+              key={i}
+            >
+                {nodeSpec.label}
+            </div>
+          ))}
+      </aside>
     );
 };
-
 export default Sidebar;

@@ -5,7 +5,7 @@ import {PIPELINES_NAME} from '../../constants';
 import {v4 as uuidv4} from 'uuid';
 import {message} from '../../utils/toasts';
 
-export const SaveControls = ({reactFlowInstance, setNodes, setEdges}) => {
+export const SaveControls = ({reactFlowInstance, setNodes, setEdges, exportSpec, nodes, edges}) => {
   const {setViewport} = useReactFlow();
   const [pipelineName, setPipelineName] = React.useState('');
   const pipelineNamesFromStorage = JSON.parse(localStorage.getItem(PIPELINES_NAME));
@@ -79,11 +79,11 @@ export const SaveControls = ({reactFlowInstance, setNodes, setEdges}) => {
         <input
           className="default-input"
           type="text"
-          placeholder="Введите название"
+          placeholder="Pipeline name"
           value={pipelineName}
           onChange={onChangeInput}
         />
-        <button className="default-button save-controls__button" onClick={onSave}>save</button>
+        <button className="default-button save-controls__button" onClick={onSave}>Save</button>
       </div>
       <div className="save-controls__item">
         <label className="save-controls__label">
@@ -97,12 +97,13 @@ export const SaveControls = ({reactFlowInstance, setNodes, setEdges}) => {
               {pipelineNames.map((name) => <option key={uuidv4()} value={name}>{name}</option>)}
             </select>
             <div className="save-controls__buttons">
-              <button className="default-button save-controls__button" onClick={onRestore}>restore</button>
-              <button className="default-button save-controls__button" onClick={onDelete}>delete</button>
+              <button className="default-button save-controls__button" onClick={onRestore}>Restore</button>
+              <button className="default-button save-controls__button" onClick={onDelete}>Delete</button>
             </div>
           </div>
         </label>
       </div>
+      <button className="save-controls__export-button default-button" onClick={() => exportSpec(nodes, edges)}>Export spec</button>
     </div>
   );
 };

@@ -73,10 +73,12 @@ export const isValidConnection = (connection, nodes) => {
     const source = nodes.filter(node => node.id === connection.source)[0];
     const target = nodes.filter(node => node.id === connection.target)[0];
 
-    let source_spec = source.data.output;
-    if (connection.sourceHandle) {
-        // console.log(source.data.extra_output)
-        source_spec = source.data.extra_output.filter(({handleId}) => handleId === connection.sourceHandle)[0].spec;
+    let source_spec;
+    source_spec = source.data.extra_output.filter(({handleId}) => handleId === connection.sourceHandle);
+    if (source_spec.length === 0) {
+        source_spec = source.data.output;
+    } else {
+        source_spec = source_spec[0].spec
     }
 
     const input_name = connection.targetHandle.replace(/.*\./, '');
