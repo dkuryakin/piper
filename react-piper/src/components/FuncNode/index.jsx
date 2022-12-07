@@ -95,7 +95,7 @@ function Output({spec, handleId, nodeId}) {
 
 
 function ExtraOutput({value, spec, handleId, nodeId}) {;
-  const [indexValue, setIndexValue] = React.useState('');
+  const [indexValue, setIndexValue] = React.useState('0');
 
   const options = specToOptions(spec);
 
@@ -104,6 +104,7 @@ function ExtraOutput({value, spec, handleId, nodeId}) {;
   const hId = handleId;
 
   const onChangeIndex = (e) => {
+    const value = e.target.value === '' ? '0' : e.target.value;
     const {nodeInternals} = store.getState();
     setNodes(
       Array.from(nodeInternals.values()).map((node) => {
@@ -112,7 +113,7 @@ function ExtraOutput({value, spec, handleId, nodeId}) {;
             ...node.data,
             extra_output: node.data.extra_output.map((output) => {
               if (output.handleId === hId) {
-                output.index = e.target.value;
+                output.index = value;
               }
               return output;
             }),
@@ -122,7 +123,7 @@ function ExtraOutput({value, spec, handleId, nodeId}) {;
         return node;
       }),
     );
-    setIndexValue(e.target.value);
+    setIndexValue(value);
   };
   const onChange = (evt) => {
     const {nodeInternals} = store.getState();
