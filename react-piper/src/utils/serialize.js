@@ -48,7 +48,7 @@ const genStagesSpec = (nodes, edges, node, stages_ids) => {
         spec = {
             func: 'map',
             name: node.parentNode,
-            input: input_spec['item'],
+            input: {'items': input_spec['item']},
             params: genMapSpec(nodes, edges, node, stages_ids),
         }
     } else {
