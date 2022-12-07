@@ -190,17 +190,6 @@ const EditorWithNoProvider = ({specs_base_url}) => {
         });
     });
 
-    const exportSpec = (nodes, edges) => {
-        const spec = JSON.stringify(generateSpec(nodes, edges));
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(spec));
-        element.setAttribute('download', `spec-${new Date().getTime()}.json`);
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-    }
-
     return (
         <div className="dndflow">
             <Sidebar specs_base_url={specs_base_url}/>
@@ -228,7 +217,6 @@ const EditorWithNoProvider = ({specs_base_url}) => {
                       reactFlowInstance={reactFlowInstance}
                       setNodes={setNodes}
                       setEdges={setEdges}
-                      exportSpec={exportSpec}
                     />
                 </ReactFlow>
             </div>

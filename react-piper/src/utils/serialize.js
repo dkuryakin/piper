@@ -96,9 +96,16 @@ const genInputByHandle = (nodes, edges, targetHandle) => {
 
     let path = (srcNode.data.type === 'input' || srcNode.data.type === 'map_input') ? 'input' : srcNode.id;
     if (srcExtraOutput.length !== 0) {
-        const name = srcExtraOutput[0].name.replace(/\[i]/g, `.${srcExtraOutput[0].index || 0}`);
+        const indexes = srcExtraOutput[0].indexes;
+        let name = srcExtraOutput[0].name.replace(/\[i]/g, `.0`);
+        if (indexes) {
+            for (const index in indexes) {
+                name = name.replace(/\.0/, `.${indexes[index]}`);
+            }
+        }
         path += (name.charAt(0) === '.' ? '' : '.') + name;
     }
+    console.log('result: ', path);
     return path;
 }
 
@@ -154,8 +161,8 @@ const genPipelineSpec = (nodes, edges, input_node, output_node, stages_ids) => {
 
 
 export const generateSpec = (nodes, edges) => {
-    const input_node = nodes?.filter(node => !node.parentNode && node.type === 'input')[0];
-    const output_node = nodes?.filter(node => !node.parentNode && node.type === 'output')[0];
+    const input_node = nodes.filter(node => !node.parentNode && node.type === 'input')[0];
+    const output_node = nodes.filter(node => !node.parentNode && node.type === 'output')[0];
     const stages_ids = new Set();
     const spec = genPipelineSpec(nodes, edges, input_node, output_node, stages_ids);
     // console.log(spec);

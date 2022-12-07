@@ -4,7 +4,6 @@ import './index.scss';
 import {v4 as uuid4} from 'uuid';
 import {isValidConnection, specToOptions, specToStr} from '../../utils/spec';
 
-
 function AddOutputButton({nodeId, spec}) {
   const options = specToOptions(spec);
   const val = Object.keys(options)[0];
@@ -93,18 +92,13 @@ function Output({spec, handleId, nodeId}) {
   );
 }
 
-
-function ExtraOutput({value, spec, handleId, nodeId}) {;
-  const [indexValue, setIndexValue] = React.useState('0');
-
-  const options = specToOptions(spec);
-
-  const {setNodes} = useReactFlow();
+function Input({nodeId, hId, index}) {
   const store = useStoreApi();
-  const hId = handleId;
+  const {setNodes} = useReactFlow();
+  const [value, setValue] = React.useState('0');
 
-  const onChangeIndex = (e) => {
-    const value = e.target.value === '' ? '0' : e.target.value;
+  const onChange = (e) => {
+    const correctValue = e.target.value === '' ? '0' : e.target.value;
     const {nodeInternals} = store.getState();
     setNodes(
       Array.from(nodeInternals.values()).map((node) => {
@@ -113,7 +107,7 @@ function ExtraOutput({value, spec, handleId, nodeId}) {;
             ...node.data,
             extra_output: node.data.extra_output.map((output) => {
               if (output.handleId === hId) {
-                output.index = value;
+                output.indexes = {...output.indexes, [index]: correctValue};
               }
               return output;
             }),
@@ -123,8 +117,28 @@ function ExtraOutput({value, spec, handleId, nodeId}) {;
         return node;
       }),
     );
-    setIndexValue(value);
+    setValue(correctValue);
   };
+
+  return (
+    <input
+      className="nodrag mt5"
+      min="0"
+      step="1"
+      type={'number'}
+      value={value}
+      onChange={onChange}
+    />
+  );
+}
+
+function ExtraOutput({value, spec, handleId, nodeId}) {
+  const options = specToOptions(spec);
+
+  const {setNodes} = useReactFlow();
+  const store = useStoreApi();
+  const hId = handleId;
+
   const onChange = (evt) => {
     const {nodeInternals} = store.getState();
     const _nodes = Array.from(nodeInternals.values()).map((node) => {
@@ -165,8 +179,7 @@ function ExtraOutput({value, spec, handleId, nodeId}) {;
             const type = param[1];  // i, key, ...
             if (type === 'i') {
               return (
-                <input key={i} className="nodrag mt5" min="0" step="1" type={'number'} value={indexValue}
-                       onChange={onChangeIndex}/>
+                <Input key={i} index={i} nodeId={nodeId} hId={hId} />
               );
             }
             return '';

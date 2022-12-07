@@ -3,8 +3,6 @@ import { Handle, useReactFlow, useStoreApi } from 'reactflow';
 import './index.scss';
 import { v4 as uuid4 } from 'uuid';
 
-
-
 function AddOutputButton({ nodeId }) {
     const { setNodes } = useReactFlow();
     const store = useStoreApi();

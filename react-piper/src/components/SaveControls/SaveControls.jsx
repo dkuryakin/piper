@@ -4,8 +4,9 @@ import {useReactFlow} from 'reactflow';
 import {PIPELINES_NAME} from '../../constants';
 import {v4 as uuidv4} from 'uuid';
 import {message} from '../../utils/toasts';
+import {generateSpec} from '../../utils/serialize';
 
-export const SaveControls = ({reactFlowInstance, setNodes, setEdges, exportSpec, nodes, edges}) => {
+export const SaveControls = ({reactFlowInstance, setNodes, setEdges, nodes, edges}) => {
   const {setViewport} = useReactFlow();
   const [pipelineName, setPipelineName] = React.useState('');
   const pipelineNamesFromStorage = JSON.parse(localStorage.getItem(PIPELINES_NAME));
@@ -73,6 +74,14 @@ export const SaveControls = ({reactFlowInstance, setNodes, setEdges, exportSpec,
     message.success('Pipeline is deleted');
   };
 
+  const onExport = (nodes, edges) => {
+    const spec = JSON.stringify(generateSpec(nodes, edges));
+    // const a = document.createElement('a');
+    // a.setAttribute('download', `spec-${new Date().getTime()}.json`);
+    // a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(spec));
+    // a.click();
+  }
+
   return (
     <div className="save-controls">
       <div className="save-controls__item">
@@ -103,7 +112,7 @@ export const SaveControls = ({reactFlowInstance, setNodes, setEdges, exportSpec,
           </div>
         </label>
       </div>
-      <button className="save-controls__export-button default-button" onClick={() => exportSpec(nodes, edges)}>Export spec</button>
+      <button className="save-controls__export-button default-button" onClick={() => onExport(nodes, edges)}>Export spec</button>
     </div>
   );
 };
