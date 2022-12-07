@@ -9,7 +9,7 @@ RUN yarn install
 COPY . .
 
 ARG SPECS_URL
-ENV REACT_APP_SPECS_URL=$SPECS_URL
+ENV SPECS_URL=$SPECS_URL
 
 RUN yarn build
 
