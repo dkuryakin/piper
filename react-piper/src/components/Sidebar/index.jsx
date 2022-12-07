@@ -42,10 +42,10 @@ const Sidebar = ({specs_url}) => {
 
     useEffect(() => {
         if (!specs_url) {
-            return [
+            return setSpecs([
                 ...nodeSpec,
                 ...specToNodes(specMock),
-            ]
+            ]);
         }
 
         fetch(specs_url).then(res => res.json()).then(spec => setSpecs([
