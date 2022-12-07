@@ -85,7 +85,6 @@ function Output({ value, handleId, nodeId }) {
 
     return (
         <div className="output">
-
             <Handle type="target" position="left" id={handleId} />
 
             <div className={'output-body'}>

@@ -12,11 +12,11 @@ export const SaveControls = ({reactFlowInstance, setNodes, setEdges, exportSpec,
   const [pipelineNames, setPipelineNames] = React.useState(pipelineNamesFromStorage || []);
   const [selectedPipelineName, setSelectedPipelineName] = React.useState(pipelineNamesFromStorage ? pipelineNamesFromStorage[0] : '');
 
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeInput = (e) => {
     setPipelineName(e.target.value);
   };
 
-  const onChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onChangeSelect = (e) => {
     setSelectedPipelineName(e.target.value);
   };
 

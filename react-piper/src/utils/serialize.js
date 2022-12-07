@@ -96,7 +96,8 @@ const genInputByHandle = (nodes, edges, targetHandle) => {
 
     let path = (srcNode.data.type === 'input' || srcNode.data.type === 'map_input') ? 'input' : srcNode.id;
     if (srcExtraOutput.length !== 0) {
-        const name = srcExtraOutput[0].name;
+        const index = srcExtraOutput[0].index || '';
+        const name = srcExtraOutput[0].name.replace(/\[i]/g, index ? `.${index}` : '');
         path += (name.charAt(0) === '.' ? '' : '.') + name;
     }
     return path;
@@ -117,6 +118,7 @@ const genOutputSpec = (nodes, edges, output_node) => {
 
 const genPipelineSpec = (nodes, edges, input_node, output_node, stages_ids) => {
     let stages_spec = [];
+    console.log(input_node);
 
     let inputHandles;
     if (input_node.data.type === 'input') {
