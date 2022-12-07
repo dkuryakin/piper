@@ -96,7 +96,13 @@ const genInputByHandle = (nodes, edges, targetHandle) => {
 
     let path = (srcNode.data.type === 'input' || srcNode.data.type === 'map_input') ? 'input' : srcNode.id;
     if (srcExtraOutput.length !== 0) {
-        const name = srcExtraOutput[0].name;
+        const indexes = srcExtraOutput[0].indexes;
+        let name = srcExtraOutput[0].name.replace(/\[i]/g, `.0`);
+        if (indexes) {
+            for (const index in indexes) {
+                name = name.replace(/\.0/, `.${indexes[index]}`);
+            }
+        }
         path += (name.charAt(0) === '.' ? '' : '.') + name;
     }
     return path;

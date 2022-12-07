@@ -21,6 +21,8 @@ import FuncNode from "../FuncNode";
 import MapNode from "../MapNode";
 import OutputNode from "../OutputNode";
 import {v4 as uuid4} from 'uuid';
+import {SaveControls} from '../SaveControls/SaveControls';
+import {DownloadPipelineImage} from '../DownloadPipelineImage/DownloadPipelineImage';
 
 
 const nodeTypes = {
@@ -31,43 +33,18 @@ const nodeTypes = {
 }
 
 const edgeTypes = {
-    default: SmoothStepEdge,
-}
-
-const flowKey = 'flow';
+  default: SmoothStepEdge,
+};
 
 const getId = () => `dndnode_${uuid4()}`;
 
-const EditorWithNoProvider = ({specs_url}) => {
+const EditorWithNoProvider = ({specs_base_url}) => {
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
-    const {setViewport} = useReactFlow();
 
     const nodeExists = (nodes, nodeId) => nodes.filter(node => node.id === nodeId).length > 0
-
-    const onSave = useCallback(() => {
-        if (reactFlowInstance) {
-            const flow = reactFlowInstance.toObject();
-            localStorage.setItem(flowKey, JSON.stringify(flow));
-        }
-    }, [reactFlowInstance]);
-
-    const onRestore = useCallback(() => {
-        const restoreFlow = async () => {
-            const flow = JSON.parse(localStorage.getItem(flowKey));
-
-            if (flow) {
-                const {x = 0, y = 0, zoom = 1} = flow.viewport;
-                setNodes(flow.nodes || []);
-                setEdges(flow.edges || []);
-                setViewport({x, y, zoom});
-            }
-        };
-
-        restoreFlow();
-    }, [setNodes, setViewport, setEdges]);
 
     const onConnect = useCallback((params) => setEdges((eds) => {
         const source = nodes.filter(node => node.id === params.source)[0];
@@ -214,21 +191,11 @@ const EditorWithNoProvider = ({specs_url}) => {
         });
     });
 
-    const exportSpec = (nodes, edges) => {
-        const spec = JSON.stringify(generateSpec(nodes, edges));
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(spec));
-        element.setAttribute('download', `spec-${new Date().getTime()}.json`);
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-    }
-
     return (
         <div className="dndflow">
-            <Sidebar specs_url={specs_url}/>
+            <Sidebar specs_base_url={specs_base_url}/>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+                <DownloadPipelineImage />
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -245,21 +212,23 @@ const EditorWithNoProvider = ({specs_url}) => {
 
                 >
                     <Controls/>
-                    <div className="save-controls">
-                        <button onClick={() => exportSpec(nodes, edges)}>export</button>
-                        <button onClick={onSave}>save</button>
-                        <button onClick={onRestore}>restore</button>
-                    </div>
+                    <SaveControls
+                      nodes={nodes}
+                      edges={edges}
+                      reactFlowInstance={reactFlowInstance}
+                      setNodes={setNodes}
+                      setEdges={setEdges}
+                    />
                 </ReactFlow>
             </div>
         </div>
     );
 };
 
-const Editor = ({specs_url}) => {
+const Editor = ({specs_base_url}) => {
     return (
         <ReactFlowProvider>
-            <EditorWithNoProvider specs_url={specs_url}/>
+            <EditorWithNoProvider specs_base_url={specs_base_url}/>
         </ReactFlowProvider>
     )
 }
