@@ -105,7 +105,6 @@ const genInputByHandle = (nodes, edges, targetHandle) => {
         }
         path += (name.charAt(0) === '.' ? '' : '.') + name;
     }
-    console.log('result: ', path);
     return path;
 }
 

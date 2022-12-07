@@ -76,10 +76,10 @@ export const SaveControls = ({reactFlowInstance, setNodes, setEdges, nodes, edge
 
   const onExport = (nodes, edges) => {
     const spec = JSON.stringify(generateSpec(nodes, edges));
-    // const a = document.createElement('a');
-    // a.setAttribute('download', `spec-${new Date().getTime()}.json`);
-    // a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(spec));
-    // a.click();
+    const a = document.createElement('a');
+    a.setAttribute('download', `spec-${new Date().getTime()}.json`);
+    a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(spec));
+    a.click();
   }
 
   return (
