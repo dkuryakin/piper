@@ -227,7 +227,7 @@ const EditorWithNoProvider = ({specs_url}) => {
 
     return (
         <div className="dndflow">
-            <Sidebar specs_base_url={specs_url}/>
+            <Sidebar specs_url={specs_url}/>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                 <ReactFlow
                     nodes={nodes}
@@ -259,7 +259,7 @@ const EditorWithNoProvider = ({specs_url}) => {
 const Editor = ({specs_url}) => {
     return (
         <ReactFlowProvider>
-            <EditorWithNoProvider specs_base_url={specs_url}/>
+            <EditorWithNoProvider specs_url={specs_url}/>
         </ReactFlowProvider>
     )
 }

@@ -5,7 +5,7 @@ import {specs_url} from "./config";
 function App() {
   return (
       <div className="App">
-          <Editor specs_base_url={specs_url} />
+          <Editor specs_url={specs_url} />
       </div>
   );
 }
