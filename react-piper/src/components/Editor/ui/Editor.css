@@ -21,17 +21,6 @@
     z-index: -1 !important;
 }
 
-.dndflow aside {
-    border-right: 1px solid #eee;
-    padding: 15px 10px;
-    font-size: 12px;
-    background: #fcfcfc;
-}
-
-.dndflow aside .description {
-    margin-bottom: 10px;
-}
-
 .dndflow .dndnode {
     height: 20px;
     padding: 4px;
@@ -68,9 +57,5 @@
 @media screen and (min-width: 768px) {
     .dndflow {
         flex-direction: row;
-    }
-
-    .dndflow aside {
-        max-width: 250px;
     }
 }

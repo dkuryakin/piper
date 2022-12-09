@@ -80,6 +80,10 @@ export const isValidConnection = (connection: Connection, nodes: Node[]) => {
     const source = nodes.filter(node => node.id === connection.source)[0];
     const target = nodes.filter(node => node.id === connection.target)[0];
 
+    if (source.type === 'input') {
+
+    }
+
     let source_spec;
     source_spec = source.data.extra_output.filter(({handleId}: IOutputInput) => handleId === connection.sourceHandle);
     if (source_spec.length === 0) {

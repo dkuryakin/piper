@@ -1,5 +1,7 @@
 import React, {FC, useEffect, useState, DragEvent} from 'react';
 import {specToNodes} from "../../../utils/spec";
+import style from './Sidebar.module.css';
+import arrowLeft from '../../../shared/assets/images/arrow-left.svg';
 
 const specMock = [
     {'func': 'read_image', 'input': {'filename': {'type': 'string'}, 'data': {'type': 'bytes'}}, 'output': {'type': 'array', 'value_type': {'type': 'tensor'}}},
@@ -37,7 +39,12 @@ interface SidebarProps {
 }
 export const Sidebar: FC<SidebarProps> = ({specs_url}) => {
     const [specs, setSpecs] = useState<any>(null);
+    const [collapsed, setCollapsed] = useState<boolean>(false);
 
+
+    const onClickHandler = () => {
+        setCollapsed(!collapsed);
+    }
     const onDragStart = (event: DragEvent<HTMLDivElement>, nodeSpec: any) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeSpec));
         event.dataTransfer.effectAllowed = 'move';
@@ -58,18 +65,23 @@ export const Sidebar: FC<SidebarProps> = ({specs_url}) => {
     }, [setSpecs, specs_url])
 
     return (
-        <aside>
-            <div className="description">Functions</div>
-            {specs === null ? '' : specs.map((nodeSpec: any, i: number) => (
-                <div
-                    className={`dndnode ${nodeSpec.type}`}
-                    onDragStart={(event) => onDragStart(event, nodeSpec)}
-                    draggable
-                    key={i}
-                >
-                    {nodeSpec.label}
-                </div>
-            ))}
+        <aside className={`${style.sidebar} ${collapsed ? style.collapsed : ''}`}>
+            <button className={style.button} onClick={onClickHandler}>
+                <img className={style.icon} src={arrowLeft} alt="Arrow left"/>
+            </button>
+            <div className={style.inner}>
+                <div className={style.description}>Functions</div>
+                {specs === null ? '' : specs.map((nodeSpec: any, i: number) => (
+                    <div
+                        className={`dndnode ${nodeSpec.type}`}
+                        onDragStart={(event) => onDragStart(event, nodeSpec)}
+                        draggable
+                        key={i}
+                    >
+                        {nodeSpec.label}
+                    </div>
+                ))}
+            </div>
         </aside>
     );
 };
