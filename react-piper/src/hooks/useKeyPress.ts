@@ -5,11 +5,7 @@ type KeyType = KeyboardEvent['key'] | KeyboardEvent['key'][];
 export const useKeyPress = (keys: KeyType, callback?: () => void): boolean => {
     const [keyPressed, setKeyPressed] = useState(false);
 
-    if (keyPressed && callback) {
-        callback();
-    }
-
-    const downHandler = useCallback(({key}: KeyboardEvent) => {
+    const downHandler = useCallback(({key}: KeyboardEvent): void => {
             if (keys.includes(key)) {
                 setKeyPressed(true);
             }
@@ -18,9 +14,10 @@ export const useKeyPress = (keys: KeyType, callback?: () => void): boolean => {
     );
 
     const upHandler = useCallback(
-        ({key}: KeyboardEvent) => {
+        ({key}: KeyboardEvent): void => {
             if (keys.includes(key)) {
                 setKeyPressed(false);
+                callback && callback();
             }
         },
         [keys],
