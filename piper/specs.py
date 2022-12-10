@@ -75,6 +75,7 @@ def generate_specs(exclude_funcs: List[str] = ('map',)) -> List[Dict[str, Any]]:
             'func': func,
             'input': input_spec,
             'output': output_spec,
+            'description': func.__doc__,
         }
         specs.append(spec)
     return specs
