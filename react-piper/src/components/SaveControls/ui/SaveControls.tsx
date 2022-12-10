@@ -90,8 +90,8 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
   }
 
   const onDemo = (nodes: Node[], edges: Edge[], pipelineName: string) => {
-    const name = encodeURIComponent(pipelineName);
-    const pipeline_spec = encodeURIComponent(JSON.stringify(generateSpec(nodes, edges)));
+    const name = pipelineName;
+    const pipeline_spec = JSON.stringify(generateSpec(nodes, edges));
 
     const addFormData = new FormData();
     addFormData.append('name', name);
