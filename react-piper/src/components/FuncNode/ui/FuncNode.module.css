@@ -1,0 +1,67 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.inputParam {
+    position: relative;
+    margin-top: 10px;
+}
+
+.inputParamBody {
+    width: 100%;
+    display: flex;
+}
+
+.inputHandle {
+    top: 8px;
+    left: -14.5px;
+}
+
+.output {
+    position: relative;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.outputHandle {
+    top: 11px;
+    right: -14.5px;
+}
+
+.outputBody {
+    margin-left: 10px;
+}
+
+
+.extraOutput {
+    position: relative;
+    margin-top: 10px;
+}
+
+.extraOutput .handle {
+    top: 11px;
+    right: -14.5px;
+}
+
+.extraOutputBody {
+    width: 100%;
+    display: flex;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    width: inherit;
+    margin-left: 10px;
+}
+
+.extraOutputBody input, select {
+    box-sizing: border-box;
+    max-width: 100px;
+    width: 100%;
+    padding: 1px 2px;
+}
