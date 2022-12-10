@@ -1,0 +1,41 @@
+.react-flow__node-group {
+  width: auto;
+}
+
+.map-node {
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .map-input {
+    position: relative;
+
+    .react-flow__handle {
+      top: 7px;
+      left: -14.5px;
+    }
+  }
+
+  .map-output {
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    display: flex;
+    justify-content: flex-end;
+
+    .react-flow__handle {
+      top: 7px;
+      right: -14.5px;
+    }
+  }
+
+  .body {
+  }
+
+  .react-resizable-handle-se {
+    bottom: -18px;
+    right: -18px;
+  }
+}

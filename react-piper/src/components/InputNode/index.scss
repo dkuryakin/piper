@@ -1,0 +1,37 @@
+.input-node {
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .map-input {
+    .react-flow__handle {
+      top: 21px;
+      left: -4.5px;
+    }
+  }
+
+  .body {
+    .react-flow__handle {
+      top: 11px;
+      right: -14.5px;
+    }
+  }
+
+  .input {
+    position: relative;
+    margin-top: 10px;
+
+    .input-body {
+      width: 100%;
+      display: flex;
+
+      input {
+        box-sizing: border-box;
+        width: inherit;
+        margin-left: 10px;
+      }
+    }
+  }
+}

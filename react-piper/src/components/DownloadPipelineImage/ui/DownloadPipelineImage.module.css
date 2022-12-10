@@ -1,8 +1,0 @@
-.downloadImage {
-    position: absolute;
-    z-index: 5;
-    right: 10px;
-    top: 10px;
-    justify-content: flex-end;
-    display: flex;
-}

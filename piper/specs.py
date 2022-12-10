@@ -62,6 +62,7 @@ def generate_specs(exclude_funcs: List[str] = ('map',)) -> List[Dict[str, Any]]:
         if func in exclude_funcs:
             continue
 
+        doc = Pipeline.functions[func].__doc__
         annotations = Pipeline.functions[func].__annotations__
         output_type = annotations.pop('return')
         output_spec = type_to_spec(output_type)
@@ -75,6 +76,7 @@ def generate_specs(exclude_funcs: List[str] = ('map',)) -> List[Dict[str, Any]]:
             'func': func,
             'input': input_spec,
             'output': output_spec,
+            'description': doc,
         }
         specs.append(spec)
     return specs
