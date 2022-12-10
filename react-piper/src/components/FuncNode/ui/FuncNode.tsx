@@ -4,6 +4,7 @@ import style from './FuncNode.module.css';
 import {v4 as uuid4} from 'uuid';
 import {isValidConnection, specToOptions, specToStr} from '../../../utils/spec';
 import {IExtraOutput} from '../../../types';
+import {max_type_length} from "../../../config";
 
 interface AddOutputButtonProps {
     nodeId: string;
@@ -85,7 +86,7 @@ const InputParam: FC<InputParamProps> = ({name, spec, handleId, nodeId}) => {
             <Handle className={style.inputHandle} type="target" position={Position.Left} id={handleId}
                     isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
             <div className={style.inputParamBody}>
-                {name}: {specToStr(spec)}
+                {name}: {specToStr(spec, max_type_length)}
             </div>
         </div>
     );
@@ -103,7 +104,7 @@ const Output: FC<OutputProps> = ({spec, handleId, nodeId}) => {
         <div className={style.output}>
             <AddOutputButton nodeId={nodeId} spec={spec}/>
             <div className={style.outputBody}>
-                {specToStr(spec)}
+                {specToStr(spec, max_type_length)}
             </div>
             <Handle className={style.outputHandle} type="source" position={Position.Right} id={handleId}
                     isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
