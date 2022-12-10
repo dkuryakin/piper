@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react';
 
-type KeyType = KeyboardEvent['key'] | KeyboardEvent['key'][];
+type KeyType = KeyboardEvent['key'][];
 
 export const useKeyPress = (keys: KeyType, callback?: () => void): boolean => {
     const [keyPressed, setKeyPressed] = useState(false);
