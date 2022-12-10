@@ -97,7 +97,6 @@ export const specToStr = (spec: any, maxLength?: number): string => {
     for (let i = 10; i >= 0; i--) {
         const _spec = _specToStr(spec, i);
         if (_spec.length <= maxLength) {
-            console.log(i, _spec)
             return _spec;
         }
     }
@@ -125,8 +124,6 @@ export const isValidConnection = (connection: Connection, nodes: Node[]) => {
     if (input_name) {
         target_spec = target.type === 'output' ? {'type': 'any'} : target.data.input[input_name];
     }
-    // console.log(source_spec, target_spec);
-    // console.log(connection)
 
     if (target.data.type === 'map_input') {
         return source_spec && source_spec.type === 'array';
@@ -138,8 +135,6 @@ export const isValidConnection = (connection: Connection, nodes: Node[]) => {
 export const validateSpecs = (src: any, dst: any) => {
     let srcs;
     let dsts;
-
-    console.log(src, dst)
 
     if (typeof src === 'string' && typeof dst === "string") {
         return src === dst || src === 'any' || dst === 'any';
