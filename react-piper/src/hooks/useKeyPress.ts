@@ -20,7 +20,7 @@ export const useKeyPress = (keys: KeyType, callback?: () => void): boolean => {
                 callback && callback();
             }
         },
-        [keys],
+        [keys, callback],
     );
 
     useEffect(() => {

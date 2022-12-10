@@ -49,31 +49,58 @@ export const specToOptions = (spec: any) => {
     return result;
 }
 
-const _objectSpecToStr = (spec: any) => {
-    const fields: string = Object.keys(spec).map(key => `${key}: ${specToStr(spec[key])}`).join(', ');
+const _objectSpecToStr = (spec: any, depth?: number) => {
+    if (depth === 0) {
+        return 'object';
+    }
+    const nextDepth = typeof depth === 'undefined' ? undefined : depth - 1;
+    const fields: string = Object.keys(spec).map(key => `${key}: ${_specToStr(spec[key], nextDepth)}`).join(', ');
     return `object{${fields}}`;
 }
 
-export const specToStr = (spec: any): string => {
+const _specToStr = (spec: any, depth?: number): string => {
+    const nextDepth = typeof depth === 'undefined' ? undefined : depth - 1;
     if (typeof spec === 'object' && !spec.hasOwnProperty('type')) {
-        return _objectSpecToStr(spec)
+        return _objectSpecToStr(spec, depth)
     }
     if (typeof spec === 'object' && spec.hasOwnProperty('type')) {
         if (spec.type === 'object') {
-            return _objectSpecToStr(spec.value_type)
+            return _objectSpecToStr(spec.value_type, depth)
         }
         if (spec.type === 'array') {
-            return 'array[' + specToStr(spec.value_type) + ']';
+            if (depth === 0) {
+                return 'array';
+            }
+            return 'array[' + _specToStr(spec.value_type, nextDepth) + ']';
         }
         if (spec.type === 'tuple') {
-            return 'tuple[' + spec.value_type.map((s: any) => specToStr(s)).join(', ') + ']';
+            if (depth === 0) {
+                return 'tuple';
+            }
+            return 'tuple[' + spec.value_type.map((s: any) => _specToStr(s, nextDepth)).join(', ') + ']';
         }
         if (spec.type === 'union') {
-            return 'union[' + spec.value_type.map((s: any) => specToStr(s)).join(', ') + ']';
+            if (depth === 0) {
+                return 'union';
+            }
+            return 'union[' + spec.value_type.map((s: any) => _specToStr(s, nextDepth)).join(', ') + ']';
         }
         return spec.type;
     }
     return '?';
+}
+
+export const specToStr = (spec: any, maxLength?: number): string => {
+    if (typeof maxLength === 'undefined') {
+        return _specToStr(spec);
+    }
+    for (let i = 10; i >= 0; i--) {
+        const _spec = _specToStr(spec, i);
+        if (_spec.length <= maxLength) {
+            return _spec;
+        }
+    }
+    return _specToStr(spec);
 }
 
 export const isValidConnection = (connection: Connection, nodes: Node[]) => {
@@ -97,8 +124,6 @@ export const isValidConnection = (connection: Connection, nodes: Node[]) => {
     if (input_name) {
         target_spec = target.type === 'output' ? {'type': 'any'} : target.data.input[input_name];
     }
-    // console.log(source_spec, target_spec);
-    // console.log(connection)
 
     if (target.data.type === 'map_input') {
         return source_spec && source_spec.type === 'array';
@@ -110,8 +135,6 @@ export const isValidConnection = (connection: Connection, nodes: Node[]) => {
 export const validateSpecs = (src: any, dst: any) => {
     let srcs;
     let dsts;
-
-    console.log(src, dst)
 
     if (typeof src === 'string' && typeof dst === "string") {
         return src === dst || src === 'any' || dst === 'any';

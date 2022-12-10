@@ -45,7 +45,7 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
       setPipelineName('');
       message.success('Pipeline name is saved');
     }
-  }, [reactFlowInstance, pipelineName]);
+  }, [reactFlowInstance, pipelineName, pipelineNames]);
 
   const onRestore = useCallback(async () => {
     if (!selectedPipelineName) {
