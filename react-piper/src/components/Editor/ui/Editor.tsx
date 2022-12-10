@@ -193,7 +193,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
         return _nodes;
     };
 
-    useKeyPress('Delete', () => {
+    useKeyPress(['Delete'], () => {
         setNodes((nodes: Node[]) => {
             const _nodes = deleteNode(nodes);
             setEdges((edges: Edge[]) => edges.filter(edge => !edge.selected && nodeExists(_nodes, edge.source) && nodeExists(_nodes, edge.target)));
