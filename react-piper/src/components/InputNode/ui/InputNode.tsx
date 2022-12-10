@@ -104,8 +104,7 @@ const Input: FC<InputProps> = ({value, handleId, nodeId}) => {
                 <DelInputButton nodeId={nodeId} handleId={handleId}/>
                 <input className="nodrag" onChange={onChange} value={value}/>
             </div>
-            <Handle className={style.handle} type="source" position={Position.Right} id={handleId}
-                    isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
+            <Handle className={style.handle} type="source" position={Position.Right} id={handleId}/>
         </div>
     );
 };
