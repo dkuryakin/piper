@@ -90,6 +90,11 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
   }
 
   const onDemo = (nodes: Node[], edges: Edge[], pipelineName: string) => {
+    if (!pipelineName) {
+      message.error('Pipeline name is required');
+      return;
+    }
+
     const name = pipelineName;
     const pipeline_spec = JSON.stringify(generateSpec(nodes, edges));
 
@@ -118,6 +123,7 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
           onChange={onChangeInput}
         />
         <button className={`${style.button} default-button`} onClick={onSave}>Save</button>
+        <button className={`default-button ${style.button}`} onClick={() => onDemo(nodes, edges, pipelineName)}>Demo</button>
       </div>
       <div className={style.item}>
         <label className={style.label}>
@@ -138,9 +144,6 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
         </label>
       </div>
       <button className={`default-button ${style.exportButton}`} onClick={() => onExport(nodes, edges)}>Export spec</button>
-      {pipelineName && ADD_PIPELINE_URL ? (
-        <button className={`default-button ${style.demoButton}`} onClick={() => onDemo(nodes, edges, pipelineName)}>Demo</button>
-      ) : ''}
     </div>
   );
 };
