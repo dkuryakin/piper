@@ -102,7 +102,7 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
 
     fetch(DEL_PIPELINE_URL, {method: 'post', body: delFormData}).finally(() => {
       fetch(ADD_PIPELINE_URL, {method: 'post', body: addFormData}).finally(() => {
-        window.open(`${RUN_PIPELINE_URL}/${name}`, '_blank');
+        window.open(`${RUN_PIPELINE_URL}/${name}/docs`, '_blank');
       });
     });
   }
