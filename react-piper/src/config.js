@@ -1,0 +1,1 @@
+export const specs_url = process.env.REACT_APP_SPECS_URL;
