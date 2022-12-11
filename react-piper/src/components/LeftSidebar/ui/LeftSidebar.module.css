@@ -11,6 +11,7 @@
 
 .node {
     position: relative;
+    width: 100%;
     z-index: 1;
     padding: 10px 5px;
     border: 2px solid #1a192b;
@@ -26,20 +27,28 @@
     margin-bottom: 25px;
 }
 
-.questionIcon {
+.iconBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     z-index: 2;
-    top: -15px;
-    right: -10px;
-    padding: 5px;
-    width: 25px;
-    height: 25px;
+    right: -13px;
+    top: -13px;
     background-color: #25B7D3;
     border-radius: 50%;
     cursor: pointer;
+    width: 26px;
+    height: 26px;
 }
 
-.questionIcon:hover + div.hint {
+.icon {
+    width: 16px;
+    height: 16px;
+    object-fit: cover;
+}
+
+.iconBox:hover + div.hint {
     opacity: 1;
     visibility: visible;
 }
@@ -49,7 +58,7 @@
     padding: 10px;
     top: 0;
     z-index: 3;
-    left: 188px;
+    left: calc(100% + 22px);
     background-color: #25B7D3;
     opacity: 0;
     visibility: hidden;

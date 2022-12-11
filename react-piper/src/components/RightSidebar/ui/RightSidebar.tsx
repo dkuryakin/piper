@@ -30,15 +30,19 @@ export const RightSidebar: FC<RightSidebarProps> = ({
       arrowPosition={ArrowPosition.Right}
       arrowClassName={style.arrow}
     >
-      <DownloadPipelineImage />
-      <SaveControls
-        nodes={nodes}
-        edges={edges}
-        reactFlowInstance={reactFlowInstance}
-        setNodes={setNodes}
-        setEdges={setEdges}
-      />
-      <NodeInfo selectedNode={selectedNode} />
+      <div className={style.wrapper}>
+        <div className={style.inner}>
+          <DownloadPipelineImage />
+          <SaveControls
+            nodes={nodes}
+            edges={edges}
+            reactFlowInstance={reactFlowInstance}
+            setNodes={setNodes}
+            setEdges={setEdges}
+          />
+          <NodeInfo selectedNode={selectedNode} />
+        </div>
+      </div>
     </SidebarLayout>
   );
 };
