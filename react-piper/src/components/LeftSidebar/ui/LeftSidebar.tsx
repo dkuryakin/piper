@@ -209,24 +209,22 @@ export const LeftSidebar: FC<LeftSidebarProps> = ({ specs_url }) => {
       <div className={style.description}>Functions</div>
       {specs?.map((nodeSpec: any, i: number) => (
         <div
-          className={`${style.node} ${style[nodeSpec.type]}`}
+          className={`${style.node} ${style[nodeSpec.type] || ""}`}
           onDragStart={(event) => onDragStart(event, nodeSpec)}
           draggable
           key={i}
         >
           {nodeSpec.description && (
-            <>
-              <img
-                className={style.questionIcon}
-                src={question}
-                alt="question"
-              />
+            <div onDragStart={(e) => e.preventDefault()}>
+              <div className={style.iconBox}>
+                <img className={style.icon} src={question} alt="question" />
+              </div>
               <div className={style.hint}>
                 <pre>
                   <code>{nodeSpec.description}</code>
                 </pre>
               </div>
-            </>
+            </div>
           )}
 
           {nodeSpec.label}
