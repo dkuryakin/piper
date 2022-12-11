@@ -12,6 +12,7 @@
 .inputParamBody {
     width: 100%;
     display: flex;
+    align-items: center;
 }
 
 .inputHandle {
@@ -50,6 +51,7 @@
 .extraOutputBody {
     width: 100%;
     display: flex;
+    align-items: center;
 }
 
 .options {

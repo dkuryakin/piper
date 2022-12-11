@@ -1,0 +1,76 @@
+.sidebar {
+    border-right: 1px solid #eee;
+    padding: 15px 10px;
+    width: 250px;
+}
+
+.arrow {
+    right: -15px;
+    top: 15px;
+}
+
+.node {
+    position: relative;
+    z-index: 1;
+    padding: 10px 5px;
+    border: 2px solid #1a192b;
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    max-width: 220px;
+}
+
+.node:not(:last-child) {
+    margin-bottom: 25px;
+}
+
+.questionIcon {
+    position: absolute;
+    z-index: 2;
+    top: -15px;
+    right: -10px;
+    padding: 5px;
+    width: 25px;
+    height: 25px;
+    background-color: #25B7D3;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.questionIcon:hover + div.hint {
+    opacity: 1;
+    visibility: visible;
+}
+
+.hint {
+    position: absolute;
+    padding: 10px;
+    top: 0;
+    z-index: 3;
+    left: 188px;
+    background-color: #25B7D3;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s linear;
+    border-radius: 2px;
+}
+
+.input {
+    border-color: green;
+}
+
+.output {
+    border-color: blue;
+}
+
+.group {
+    border-color: purple;
+}
+
+.description {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}

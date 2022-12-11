@@ -1,33 +1,31 @@
-import React, {FC, useCallback, useRef, useState, DragEvent} from 'react';
-import {useKeyPress} from '../../../hooks/useKeyPress';
+import React, { DragEvent, FC, useCallback, useRef, useState } from "react";
+import { useKeyPress } from "../../../hooks/useKeyPress";
 import ReactFlow, {
-    addEdge,
-    Connection,
-    ConnectionLineType,
-    Controls,
-    Edge,
-    MarkerType,
-    Node,
-    ReactFlowInstance,
-    ReactFlowProvider,
-    SmoothStepEdge,
-    useEdgesState,
-    useNodesState,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+  addEdge,
+  Connection,
+  ConnectionLineType,
+  Controls,
+  Edge,
+  MarkerType,
+  Node,
+  ReactFlowInstance,
+  ReactFlowProvider,
+  SmoothStepEdge,
+  useEdgesState,
+  useNodesState,
+} from "reactflow";
+import "reactflow/dist/style.css";
 
-import {Sidebar} from '../../Sidebar/ui/Sidebar';
+import { LeftSidebar } from "../../LeftSidebar";
 
-import './Editor.css';
-import {InputNode} from '../../InputNode/ui/InputNode';
-import {FuncNode} from '../../FuncNode/ui/FuncNode';
-import {MapNode} from '../../MapNode/ui/MapNode';
-import {OutputNode} from '../../OutputNode/ui/OutputNode';
-import {v4 as uuid4} from 'uuid';
-import {SaveControls} from '../../SaveControls/ui/SaveControls';
-import {IExtraOutput} from '../../../types';
-import {DownloadPipelineImage} from '../../DownloadPipelineImage';
-
+import "./Editor.css";
+import { InputNode } from "../../InputNode";
+import { FuncNode } from "../../FuncNode";
+import { MapNode } from "../../MapNode";
+import { OutputNode } from "../../OutputNode";
+import { v4 as uuid4 } from "uuid";
+import { IExtraOutput } from "../../../types";
+import { RightSidebar } from "../../RightSidebar";
 
 const nodeTypes = {
     input: InputNode,
@@ -46,7 +44,7 @@ interface EditorWithNoProviderProps {
     specs_url: string;
 }
 
-const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
+const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -54,12 +52,15 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
 
     const nodeExists = (nodes: Node[], nodeId: string) => nodes.filter(node => node.id === nodeId).length > 0;
 
+    const selectedNodes = nodes.filter((n) => n.selected);
+    const selectedNode = selectedNodes.length === 1 ? selectedNodes[0] : null;
+
     const onConnect = useCallback((params: Connection) => setEdges((eds) => {
         const source = nodes.filter((node: Node) => node.id === params.source)[0];
         const target = nodes.filter((node: Node) => node.id === params.target)[0];
 
         if (target.data.type === 'map_input') {
-            let item_spec = source.data.extra_output.filter(({handleId}: IExtraOutput) => handleId === params.sourceHandle);
+            let item_spec = source.data.extra_output.filter(({ handleId }: IExtraOutput) => handleId === params.sourceHandle);
             if (item_spec.length === 0) {
                 item_spec = source.data.output.value_type;
             } else {
@@ -72,7 +73,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
                         ...node,
                         data: {
                             ...node.data,
-                            input: {'item': item_spec},
+                            input: { 'item': item_spec },
                             output: item_spec,
                         },
                     };
@@ -94,10 +95,10 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
         event.dataTransfer.dropEffect = 'move';
     }, []);
 
-    const getParentNode = useCallback((position: {x: number, y: number}) => {
+    const getParentNode = useCallback((position: { x: number, y: number }) => {
         for (let i = nodes.length - 1; i >= 0; i--) {
-            const {x, y} = position;
-            const {width, height, positionAbsolute: pa, position: p} = nodes[i];
+            const { x, y } = position;
+            const { width, height, positionAbsolute: pa, position: p } = nodes[i];
             const pos = pa || p;
             if (x < pos.x + (width || 0) && x > pos.x && y < pos.y + (height || 0) && y > pos.y) {
                 return nodes[i];
@@ -121,7 +122,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
                 const position = reactFlowInstance?.project({
                     x: event.clientX - reactFlowBounds.left,
                     y: event.clientY - reactFlowBounds.top,
-                }) || {x: 0, y: 0};
+                }) || { x: 0, y: 0 };
                 const newNode: Node = {
                     id: getId(),
                     type: nodeSpec.type,
@@ -145,7 +146,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
                     newNodes.push({
                         id: getId(),
                         type: 'default',
-                        position: {x: 0, y: 0},
+                        position: { x: 0, y: 0 },
                         //draggable: false,
                         //selectable: false,
                         parentNode: newNode.id,
@@ -153,7 +154,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
                         data: {
                             label: 'Map Input',
                             type: 'map_input',
-                            input: {'item': '?'},
+                            input: { 'item': '?' },
                             output: '?',
                             extra_output: [],
                         },
@@ -161,7 +162,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
                     newNodes.push({
                         id: getId(),
                         type: 'output',
-                        position: {x: 75, y: 101},
+                        position: { x: 75, y: 101 },
                         parentNode: newNode.id,
                         //draggable: false,
                         //selectable: false,
@@ -201,12 +202,10 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
         });
     });
 
-
     return (
         <div className="dndflow">
-            <Sidebar specs_url={specs_url}/>
+            <LeftSidebar specs_url={specs_url} />
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-                <DownloadPipelineImage/>
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -220,18 +219,18 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({specs_url}) => {
                     nodeTypes={nodeTypes}
                     edgeTypes={edgeTypes}
                     connectionLineType={ConnectionLineType.SmoothStep}
-
                 >
-                    <Controls/>
-                    <SaveControls
-                        nodes={nodes}
-                        edges={edges}
-                        reactFlowInstance={reactFlowInstance}
-                        setNodes={setNodes}
-                        setEdges={setEdges}
-                    />
+                    <Controls />
                 </ReactFlow>
             </div>
+            <RightSidebar
+                selectedNode={selectedNode}
+                nodes={nodes}
+                edges={edges}
+                reactFlowInstance={reactFlowInstance}
+                setNodes={setNodes}
+                setEdges={setEdges}
+            />
         </div>
     );
 };
@@ -240,10 +239,10 @@ interface EditorProps {
     specs_url: string;
 }
 
-export const Editor: FC<EditorProps> = ({specs_url}) => {
+export const Editor: FC<EditorProps> = ({ specs_url }) => {
     return (
         <ReactFlowProvider>
-            <EditorWithNoProvider specs_url={specs_url}/>
+            <EditorWithNoProvider specs_url={specs_url} />
         </ReactFlowProvider>
     );
 };

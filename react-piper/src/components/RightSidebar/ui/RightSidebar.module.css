@@ -1,0 +1,9 @@
+.sidebar {
+    padding: 15px 10px;
+    width: 350px;
+}
+
+.arrow {
+    left: -15px;
+    top: 15px;
+}

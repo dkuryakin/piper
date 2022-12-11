@@ -21,30 +21,6 @@
     z-index: -1 !important;
 }
 
-.dndflow .dndnode {
-    height: 20px;
-    padding: 4px;
-    border: 1px solid #1a192b;
-    border-radius: 2px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: grab;
-}
-
-.dndflow .dndnode.input {
-    border-color: green;
-}
-
-.dndflow .dndnode.output {
-    border-color: blue;
-}
-
-.dndflow .dndnode.group {
-    border-color: purple;
-}
-
 .dndflow .reactflow-wrapper {
     flex-grow: 1;
     height: 100%;
