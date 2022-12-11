@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, memo} from 'react';
+import React, {ChangeEvent, FC} from 'react';
 import {Handle, Position, useReactFlow, useStoreApi} from 'reactflow';
 import style from './OutputNode.module.css';
 import { v4 as uuid4 } from 'uuid';

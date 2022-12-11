@@ -1,23 +1,24 @@
-import React, { ChangeEvent, FC, memo } from 'react';
-import { Handle, Position, useReactFlow, useStoreApi } from 'reactflow';
+import React, {ChangeEvent, FC, memo} from 'react';
+import {Handle, Position, useReactFlow, useStoreApi} from 'reactflow';
 import style from './FuncNode.module.css';
-import { v4 as uuid4 } from 'uuid';
-import { isValidConnection, specToOptions, specToStr } from '../../../utils/spec';
-import { IExtraOutput } from '../../../types';
+import {v4 as uuid4} from 'uuid';
+import {isValidConnection, specToOptions, specToStr} from '../../../utils/spec';
+import {IExtraOutput} from '../../../types';
+import {MAX_TYPE_LENGTH} from "../../../constants";
 
 interface AddOutputButtonProps {
     nodeId: string;
     spec: any;
 }
-const AddOutputButton: FC<AddOutputButtonProps> = ({ nodeId, spec }) => {
+const AddOutputButton: FC<AddOutputButtonProps> = ({nodeId, spec}) => {
     const options: any = specToOptions(spec);
     const val = Object.keys(options)[0];
 
-    const { setNodes } = useReactFlow();
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
 
     const onAddOutput = () => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
@@ -25,7 +26,7 @@ const AddOutputButton: FC<AddOutputButtonProps> = ({ nodeId, spec }) => {
                         ...node.data,
                         extra_output: [
                             ...node.data.extra_output,
-                            { name: val, handleId: uuid4(), spec: options[val] },
+                            {name: val, handleId: uuid4(), spec: options[val]},
                         ],
                     };
                 }
@@ -36,35 +37,28 @@ const AddOutputButton: FC<AddOutputButtonProps> = ({ nodeId, spec }) => {
     };
 
     return (
-        <button
-            className={'nodrag add-output btn'}
-            onClick={onAddOutput}
-            disabled={Object.keys(options).length === 0}
-        >
-            +
-        </button>
+        <button className={'nodrag add-output btn'} onClick={onAddOutput}
+                disabled={Object.keys(options).length === 0}>+</button>
     );
-};
+}
 
 interface DelOutputButtonProps {
     nodeId: string;
     handleId: string;
 }
-const DelOutputButton: FC<DelOutputButtonProps> = ({ nodeId, handleId }) => {
-    const { setNodes } = useReactFlow();
+const DelOutputButton: FC<DelOutputButtonProps> = ({nodeId, handleId}) => {
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
     const hId = handleId;
 
     const onDelInput = () => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
                     node.data = {
                         ...node.data,
-                        extra_output: node.data.extra_output.filter(
-                            ({ handleId }: IExtraOutput) => handleId !== hId,
-                        ),
+                        extra_output: node.data.extra_output.filter(({handleId}: IExtraOutput) => handleId !== hId),
                     };
                 }
 
@@ -74,11 +68,9 @@ const DelOutputButton: FC<DelOutputButtonProps> = ({ nodeId, handleId }) => {
     };
 
     return (
-        <button className={'nodrag del-output btn'} onClick={onDelInput}>
-            -
-        </button>
+        <button className={'nodrag del-output btn'} onClick={onDelInput}>-</button>
     );
-};
+}
 
 interface InputParamProps {
     nodeId: string;
@@ -86,71 +78,53 @@ interface InputParamProps {
     spec: any;
     name: string;
 }
-const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
+const InputParam: FC<InputParamProps> = ({name, spec, handleId, nodeId}) => {
     const store = useStoreApi();
 
     return (
         <div className={style.inputParam}>
-            <Handle
-                className={style.inputHandle}
-                type="target"
-                position={Position.Left}
-                id={handleId}
-                isValidConnection={(connection) =>
-                    isValidConnection(
-                        connection,
-                        Array.from(store.getState().nodeInternals.values()),
-                    )
-                }
-            />
+            <Handle className={style.inputHandle} type="target" position={Position.Left} id={handleId}
+                    isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
             <div className={style.inputParamBody}>
-                {name}: {specToStr(spec)}
+                {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
             </div>
         </div>
     );
-};
+}
 
 interface OutputProps {
     spec: any;
     handleId: string;
     nodeId: string;
 }
-const Output: FC<OutputProps> = ({ spec, handleId, nodeId }) => {
+const Output: FC<OutputProps> = ({spec, handleId, nodeId}) => {
     const store = useStoreApi();
 
     return (
         <div className={style.output}>
-            <AddOutputButton nodeId={nodeId} spec={spec} />
-            <div className={style.outputBody}>{specToStr(spec)}</div>
-            <Handle
-                className={style.outputHandle}
-                type="source"
-                position={Position.Right}
-                id={handleId}
-                isValidConnection={(connection) =>
-                    isValidConnection(
-                        connection,
-                        Array.from(store.getState().nodeInternals.values()),
-                    )
-                }
-            />
+            <AddOutputButton nodeId={nodeId} spec={spec}/>
+            <div className={style.outputBody}>
+                {specToStr(spec, MAX_TYPE_LENGTH)}
+            </div>
+            <Handle className={style.outputHandle} type="source" position={Position.Right} id={handleId}
+                    isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
         </div>
     );
-};
+}
 
 interface InputProps {
     nodeId: string;
     hId: string;
     index: number;
 }
-const Input: FC<InputProps> = ({ nodeId, hId, index }) => {
+const Input: FC<InputProps> = ({nodeId, hId, index}) => {
     const store = useStoreApi();
-    const { setNodes } = useReactFlow();
+    const {setNodes} = useReactFlow();
     const [value, setValue] = React.useState('0');
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         const correctValue = e.target.value === '' ? '0' : e.target.value;
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         setNodes(
             Array.from(nodeInternals.values()).map((node) => {
                 if (node.id === nodeId) {
@@ -158,7 +132,7 @@ const Input: FC<InputProps> = ({ nodeId, hId, index }) => {
                         ...node.data,
                         extra_output: node.data.extra_output.map((output: IExtraOutput) => {
                             if (output.handleId === hId) {
-                                output.indexes = { ...output.indexes, [index]: correctValue };
+                                output.indexes = {...output.indexes, [index]: correctValue};
                             }
                             return output;
                         }),
@@ -184,33 +158,31 @@ const Input: FC<InputProps> = ({ nodeId, hId, index }) => {
 };
 
 interface ExtraOutputProps {
-    value: string;
-    spec: any;
-    handleId: string;
-    nodeId: string;
+  value: string;
+  spec: any;
+  handleId: string;
+  nodeId: string;
 }
-const ExtraOutput: FC<ExtraOutputProps> = ({ value, spec, handleId, nodeId }) => {
+const ExtraOutput: FC<ExtraOutputProps> = ({value, spec, handleId, nodeId}) => {
     const options: any = specToOptions(spec);
 
-    const { setNodes } = useReactFlow();
+    const {setNodes} = useReactFlow();
     const store = useStoreApi();
     const hId = handleId;
 
     const onChange = (evt: ChangeEvent<HTMLSelectElement>) => {
-        const { nodeInternals } = store.getState();
+        const {nodeInternals} = store.getState();
         const _nodes = Array.from(nodeInternals.values()).map((node) => {
             if (node.id === nodeId) {
                 return {
                     ...node,
                     data: {
                         ...node.data,
-                        extra_output: node.data.extra_output.map(
-                            ({ name, handleId }: IExtraOutput) => ({
-                                name: hId === handleId ? evt.target.value : name,
-                                handleId,
-                                spec: options[hId === handleId ? evt.target.value : name],
-                            }),
-                        ),
+                        extra_output: node.data.extra_output.map(({name, handleId}: IExtraOutput) => ({
+                            name: hId === handleId ? evt.target.value : name,
+                            handleId,
+                            spec: options[hId === handleId ? evt.target.value : name],
+                        })),
                     },
                 };
             }
@@ -227,54 +199,42 @@ const ExtraOutput: FC<ExtraOutputProps> = ({ value, spec, handleId, nodeId }) =>
     return (
         <div className={style.extraOutput}>
             <div className={style.extraOutputBody}>
-                <DelOutputButton nodeId={nodeId} handleId={handleId} />
+                <DelOutputButton nodeId={nodeId} handleId={handleId}/>
                 <div className={style.options}>
                     <select className="nodrag" onChange={onChange} value={value}>
-                        {Object.keys(options).map((option) => (
-                            <option value={option} key={option}>
-                                {option}
-                            </option>
+                        {Object.keys(options).map(option => (
+                            <option value={option} key={option}>{option}</option>
                         ))}
                     </select>
                     {Array.from(value.matchAll(/\[([^\]]+)]/g)).map((param, i) => {
-                        const type = param[1]; // i, key, ...
+                        const type = param[1];  // i, key, ...
                         if (type === 'i') {
-                            return <Input key={i} index={i} nodeId={nodeId} hId={hId} />;
+                            return (
+                                <Input key={i} index={i} nodeId={nodeId} hId={hId}/>
+                            );
                         }
                         return '';
                     })}
                 </div>
             </div>
-            <Handle
-                className={style.handle}
-                type="source"
-                position={Position.Right}
-                id={handleId}
-                isValidConnection={(connection) =>
-                    isValidConnection(
-                        connection,
-                        Array.from(store.getState().nodeInternals.values()),
-                    )
-                }
-            />
+            <Handle className={style.handle} type="source" position={Position.Right} id={handleId}
+                    isValidConnection={(connection) => isValidConnection(connection, Array.from(store.getState().nodeInternals.values()))}/>
         </div>
     );
-};
+}
 
 interface FuncNodeProps {
     id: string;
-    data: any;
+    data: any
 }
-export const FuncNode: FC<FuncNodeProps> = memo(({ id, data }) => {
+export const FuncNode: FC<FuncNodeProps> = memo(({id, data}) => {
     return (
         <div className={style.funcNode}>
             <div className={style.header}>
-                <div>
-                    <strong>{data.label}</strong>
-                </div>
+                <div><strong>{data.label}</strong></div>
             </div>
             <div className={style.body}>
-                {Object.keys(data.input).map((param_name) => (
+                {Object.keys(data.input).map(param_name => (
                     <InputParam
                         key={param_name}
                         nodeId={id}
@@ -284,15 +244,13 @@ export const FuncNode: FC<FuncNodeProps> = memo(({ id, data }) => {
                     />
                 ))}
             </div>
-            <Output nodeId={id} spec={data.output} handleId={`func-node-${id}-output`} />
-            {data.extra_output.map(({ name, handleId }: IExtraOutput) => (
-                <ExtraOutput
-                    key={handleId}
-                    nodeId={id}
-                    value={name}
-                    spec={data.output}
-                    handleId={handleId}
-                />
+            <Output
+                nodeId={id}
+                spec={data.output}
+                handleId={`func-node-${id}-output`}
+            />
+            {data.extra_output.map(({name, handleId}: IExtraOutput) => (
+                <ExtraOutput key={handleId} nodeId={id} value={name} spec={data.output} handleId={handleId}/>
             ))}
         </div>
     );

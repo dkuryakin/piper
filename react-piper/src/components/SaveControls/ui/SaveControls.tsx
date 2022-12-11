@@ -1,7 +1,7 @@
 import React, {ChangeEvent, FC, useCallback} from 'react';
 import style from './SaveControls.module.css';
 import {ReactFlowInstance, useReactFlow, Node, Edge} from 'reactflow';
-import {PIPELINES_NAME} from '../../../constants';
+import {ADD_PIPELINE_URL, DEL_PIPELINE_URL, PIPELINES_NAME, RUN_PIPELINE_URL} from '../../../constants';
 import {v4 as uuidv4} from 'uuid';
 import {message} from '../../../utils/toasts';
 import {generateSpec} from '../../../utils/serialize';
@@ -45,7 +45,7 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
       setPipelineName('');
       message.success('Pipeline name is saved');
     }
-  }, [reactFlowInstance, pipelineName]);
+  }, [reactFlowInstance, pipelineName, pipelineNames]);
 
   const onRestore = useCallback(async () => {
     if (!selectedPipelineName) {
@@ -89,6 +89,29 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
     a.click();
   }
 
+  const onDemo = (nodes: Node[], edges: Edge[], pipelineName: string) => {
+    if (!pipelineName) {
+      message.error('Pipeline name is required');
+      return;
+    }
+
+    const name = pipelineName;
+    const pipeline_spec = JSON.stringify(generateSpec(nodes, edges));
+
+    const addFormData = new FormData();
+    addFormData.append('name', name);
+    addFormData.append('pipeline_spec', pipeline_spec);
+
+    const delFormData = new FormData();
+    delFormData.append('name', name);
+
+    fetch(DEL_PIPELINE_URL, {method: 'post', body: delFormData}).finally(() => {
+      fetch(ADD_PIPELINE_URL, {method: 'post', body: addFormData}).finally(() => {
+        window.open(`${RUN_PIPELINE_URL}/${name}/docs`, '_blank');
+      });
+    });
+  }
+
   return (
     <div className={style.saveControls}>
       <div className={style.item}>
@@ -100,6 +123,7 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
           onChange={onChangeInput}
         />
         <button className={`${style.button} default-button`} onClick={onSave}>Save</button>
+        <button className={`default-button ${style.button}`} onClick={() => onDemo(nodes, edges, pipelineName)}>Demo</button>
       </div>
       <div className={style.item}>
         <label className={style.label}>
@@ -119,7 +143,7 @@ export const SaveControls: FC<SaveControlsProps> = ({reactFlowInstance, setNodes
           </div>
         </label>
       </div>
-      <button className={` default-button ${style.exportButton}`} onClick={() => onExport(nodes, edges)}>Export spec</button>
+      <button className={`default-button ${style.exportButton}`} onClick={() => onExport(nodes, edges)}>Export spec</button>
     </div>
   );
 };
