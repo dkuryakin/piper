@@ -1,13 +1,17 @@
-import React, { DragEvent, FC, useEffect, useState } from 'react';
+import React, { DragEvent, FC, useEffect, useState, MouseEvent } from 'react';
 import { specToNodes } from '../../../utils/spec';
-import style from './Sidebar.module.css';
+import style from './LeftSidebar.module.css';
 import arrowLeft from '../../../shared/assets/images/arrow-left.svg';
+import question from '../../../shared/assets/images/question.svg';
+import { SidebarLayout } from '../../SidebarLayout/SidebarLayout';
+import { ArrowPosition } from '../../../types';
 
 const specMock = [
     {
         func: 'read_image',
         input: { filename: { type: 'string' }, data: { type: 'bytes' } },
         output: { type: 'array', value_type: { type: 'tensor' } },
+        description: 'Converts any bytestream into the ndarray image.',
     },
     {
         func: 'find_documents',
@@ -28,6 +32,7 @@ const specMock = [
                 },
             },
         },
+        description: 'Find documents on the image.',
     },
     {
         func: 'enrich_list',
@@ -36,6 +41,8 @@ const specMock = [
             type: 'array',
             value_type: { type: 'dict', key_type: { type: 'string' }, value_type: { type: 'any' } },
         },
+        description:
+            "\n    Transforms list of items from form of:\n    [i0, i1, i2, ...]\n    to following form:\n    [\n        {'item': i0, key1=val1, key2=val2, ...},\n        {'item': i1, key1=val1, key2=val2, ...},\n        {'item': i2, key1=val1, key2=val2, ...},\n        ...\n    ]\n    ",
     },
     {
         func: 'classify_document',
@@ -65,6 +72,7 @@ const specMock = [
                 confidence: { type: 'float' },
             },
         },
+        description: 'Classify document type (string).',
     },
     {
         func: 'find_fields',
@@ -126,18 +134,7 @@ const specMock = [
                 },
             },
         },
-    },
-    {
-        func: 'ocr',
-        input: {
-            image: { type: 'tensor' },
-            document_type: { type: 'string' },
-            field_name: { type: 'string' },
-        },
-        output: {
-            type: 'object',
-            value_type: { text: { type: 'string' }, confidence: { type: 'float' } },
-        },
+        description: 'Extract fields crops from image with known document type.',
     },
     {
         func: 'ocr_many',
@@ -150,6 +147,7 @@ const specMock = [
             type: 'object',
             value_type: { text: { type: 'string' }, confidence: { type: 'float' } },
         },
+        description: 'Convert image with text to string and confidence.',
     },
 ];
 
@@ -174,17 +172,13 @@ const nodeSpec = [
     },
 ];
 
-interface SidebarProps {
+interface LeftSidebarProps {
     specs_url: string;
 }
 
-export const Sidebar: FC<SidebarProps> = ({ specs_url }) => {
+export const LeftSidebar: FC<LeftSidebarProps> = ({ specs_url }) => {
     const [specs, setSpecs] = useState<any>(null);
-    const [collapsed, setCollapsed] = useState<boolean>(false);
 
-    const onClickHandler = () => {
-        setCollapsed(!collapsed);
-    };
     const onDragStart = (event: DragEvent<HTMLDivElement>, nodeSpec: any) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeSpec));
         event.dataTransfer.effectAllowed = 'move';
@@ -201,25 +195,33 @@ export const Sidebar: FC<SidebarProps> = ({ specs_url }) => {
     }, [setSpecs, specs_url]);
 
     return (
-        <aside className={`${style.sidebar} ${collapsed ? style.collapsed : ''}`}>
-            <button className={style.button} onClick={onClickHandler}>
-                <img className={style.icon} src={arrowLeft} alt="Arrow left" />
-            </button>
-            <div className={style.inner}>
-                <div className={style.description}>Functions</div>
-                {specs === null
-                    ? ''
-                    : specs.map((nodeSpec: any, i: number) => (
-                          <div
-                              className={`dndnode ${nodeSpec.type}`}
-                              onDragStart={(event) => onDragStart(event, nodeSpec)}
-                              draggable
-                              key={i}
-                          >
-                              {nodeSpec.label}
-                          </div>
-                      ))}
-            </div>
-        </aside>
+        <SidebarLayout
+            className={`${style.sidebar}`}
+            arrowPosition={ArrowPosition.Left}
+            arrowClassName={style.arrow}
+        >
+            <div className={style.description}>Functions</div>
+            {specs?.map((nodeSpec: any, i: number) => (
+                <div
+                    className={`${style.node} ${style[nodeSpec.type]}`}
+                    onDragStart={(event) => onDragStart(event, nodeSpec)}
+                    draggable
+                    key={i}
+                >
+                    {nodeSpec.description && (
+                        <>
+                            <img className={style.questionIcon} src={question} alt="question" />
+                            <div className={style.hint}>
+                                <pre>
+                                    <code>{nodeSpec.description}</code>
+                                </pre>
+                            </div>
+                        </>
+                    )}
+
+                    {nodeSpec.label}
+                </div>
+            ))}
+        </SidebarLayout>
     );
 };

@@ -1,24 +1,25 @@
-import {Connection, Node} from 'reactflow';
-import {IOutputInput} from '../types';
+import { Connection, Node } from 'reactflow';
+import { IOutputInput } from '../types';
 
-export const specToNodes = (spec: any) => spec.map((func: any) => ({
-    ...func,
-    type: 'default',
-    label: ('_' + func.func).replaceAll(/_./g, s => ' ' + s.charAt(1).toUpperCase()).trim(),
-    extra_output: [],
-}));
+export const specToNodes = (spec: any) =>
+    spec.map((func: any) => ({
+        ...func,
+        type: 'default',
+        label: ('_' + func.func).replaceAll(/_./g, (s) => ' ' + s.charAt(1).toUpperCase()).trim(),
+        extra_output: [],
+    }));
 
 const _objectSpecToOptions = (spec: any, prefix: string) => {
     let options = {};
-    for (let option in spec) if (spec.hasOwnProperty(option)) {
-        options = {
-            ...options,
-            ..._specToOptions(spec[option], `${prefix}${option}`),
+    for (let option in spec)
+        if (spec.hasOwnProperty(option)) {
+            options = {
+                ...options,
+                ..._specToOptions(spec[option], `${prefix}${option}`),
+            };
         }
-    }
     return options;
-}
-
+};
 
 const _specToOptions = (spec: any, prefix: string) => {
     let inner_options = {};
@@ -37,8 +38,7 @@ const _specToOptions = (spec: any, prefix: string) => {
         [prefix]: spec,
         ...inner_options,
     };
-}
-
+};
 
 interface IResult {
     [key: string]: any;
@@ -47,20 +47,22 @@ export const specToOptions = (spec: any) => {
     const result: IResult = _specToOptions(spec, '');
     delete result[''];
     return result;
-}
+};
 
 const _objectSpecToStr = (spec: any) => {
-    const fields: string = Object.keys(spec).map(key => `${key}: ${specToStr(spec[key])}`).join(', ');
+    const fields: string = Object.keys(spec)
+        .map((key) => `${key}: ${specToStr(spec[key])}`)
+        .join(', ');
     return `object{${fields}}`;
-}
+};
 
 export const specToStr = (spec: any): string => {
     if (typeof spec === 'object' && !spec.hasOwnProperty('type')) {
-        return _objectSpecToStr(spec)
+        return _objectSpecToStr(spec);
     }
     if (typeof spec === 'object' && spec.hasOwnProperty('type')) {
         if (spec.type === 'object') {
-            return _objectSpecToStr(spec.value_type)
+            return _objectSpecToStr(spec.value_type);
         }
         if (spec.type === 'array') {
             return 'array[' + specToStr(spec.value_type) + ']';
@@ -74,28 +76,29 @@ export const specToStr = (spec: any): string => {
         return spec.type;
     }
     return '?';
-}
+};
 
 export const isValidConnection = (connection: Connection, nodes: Node[]) => {
-    const source = nodes.filter(node => node.id === connection.source)[0];
-    const target = nodes.filter(node => node.id === connection.target)[0];
+    const source = nodes.filter((node) => node.id === connection.source)[0];
+    const target = nodes.filter((node) => node.id === connection.target)[0];
 
     if (source.type === 'input') {
-
     }
 
     let source_spec;
-    source_spec = source.data.extra_output.filter(({handleId}: IOutputInput) => handleId === connection.sourceHandle);
+    source_spec = source.data.extra_output.filter(
+        ({ handleId }: IOutputInput) => handleId === connection.sourceHandle,
+    );
     if (source_spec.length === 0) {
         source_spec = source.data.output;
     } else {
-        source_spec = source_spec[0].spec
+        source_spec = source_spec[0].spec;
     }
 
     const input_name = connection.targetHandle?.replace(/.*\./, '');
     let target_spec;
     if (input_name) {
-        target_spec = target.type === 'output' ? {'type': 'any'} : target.data.input[input_name];
+        target_spec = target.type === 'output' ? { type: 'any' } : target.data.input[input_name];
     }
     // console.log(source_spec, target_spec);
     // console.log(connection)
@@ -111,9 +114,7 @@ export const validateSpecs = (src: any, dst: any) => {
     let srcs;
     let dsts;
 
-    console.log(src, dst)
-
-    if (typeof src === 'string' && typeof dst === "string") {
+    if (typeof src === 'string' && typeof dst === 'string') {
         return src === dst || src === 'any' || dst === 'any';
     }
 
@@ -122,7 +123,7 @@ export const validateSpecs = (src: any, dst: any) => {
     } else if (src && src.type === 'union') {
         srcs = src.value_type;
     } else {
-        srcs = [specToStr(src)]
+        srcs = [specToStr(src)];
     }
 
     if (typeof dst === 'string') {
@@ -130,7 +131,7 @@ export const validateSpecs = (src: any, dst: any) => {
     } else if (dst && dst.type === 'union') {
         dsts = dst.value_type;
     } else {
-        dsts = [specToStr(dst)]
+        dsts = [specToStr(dst)];
     }
 
     for (let s of srcs) {
@@ -141,4 +142,4 @@ export const validateSpecs = (src: any, dst: any) => {
         }
     }
     return false;
-}
+};

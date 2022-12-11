@@ -8,6 +8,13 @@ export interface IExtraOutput {
     handleId: string;
     indexes?: {
         [key: string]: number;
-    }
+    };
     spec: any;
+}
+
+export const enum ArrowPosition {
+    Left = 'left',
+    Right = 'right',
+    Top = 'top',
+    Bottom = 'bottom',
 }

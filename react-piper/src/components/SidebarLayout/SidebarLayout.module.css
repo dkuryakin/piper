@@ -1,0 +1,29 @@
+.sidebar {
+    position: relative;
+    font-size: 14px;
+    background: #fcfcfc;
+    transition: width 0.2s linear;
+}
+
+.sidebar.collapsed {
+    width: 20px;
+    padding: 0;
+    transition: width 0.2s linear;
+}
+
+.sidebar.collapsed .arrow {
+    transform: rotate(180deg);
+}
+
+.sidebar.collapsed .content {
+    opacity: 0;
+    visibility: hidden;
+    transition: none;
+}
+
+.content {
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.2s linear;
+    transition-delay: 0.2s;
+}

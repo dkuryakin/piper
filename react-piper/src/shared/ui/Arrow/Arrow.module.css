@@ -1,36 +1,6 @@
-.sidebar {
-    position: relative;
-    border-right: 1px solid #eee;
-    padding: 15px 10px;
-    font-size: 12px;
-    background: #fcfcfc;
-    transition: width 0.1s linear;
-    width: 150px;
-}
-
-.sidebar.collapsed {
-    width: 20px;
-    padding: 0;
-    transition: width 0.1s linear;
-}
-
-.sidebar.collapsed .button {
-    transform: rotate(180deg);
-}
-
-.sidebar.collapsed .inner {
-    display: none;
-}
-
-.description {
-    margin-bottom: 10px;
-}
-
 .button {
     position: absolute;
     z-index: 4;
-    right: -15px;
-    top: 7px;
     border: none;
     display: flex;
     align-items: center;
@@ -50,8 +20,20 @@
     background-color: rgba(198,195,181, 0.9);
 }
 
-.icon {
+.arrow {
     width: 20px;
     height: 20px;
     object-fit: cover;
+}
+
+.arrow.right {
+    transform: rotate(180deg);
+}
+
+.arrow.top {
+    transform: rotate(90deg);
+}
+
+.arrow.bottom {
+    transform: rotate(-90deg);
 }
