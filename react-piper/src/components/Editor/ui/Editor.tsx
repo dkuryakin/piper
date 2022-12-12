@@ -45,13 +45,13 @@ const initialNodes: Node[] = [
     id: getId(),
     type: "input",
     position: { x: -225, y: -200 },
-    data: { label: "Input", input: [] },
+    data: { type: "input", label: "Input", input: [] },
   },
   {
     id: getId(),
     type: "output",
     position: { x: 225, y: 200 },
-    data: { label: "Output", output: [] },
+    data: { type: "output", label: "Output", output: [] },
   },
 ];
 const unRemovableNodeTypes = ["input", "output", "map_input", "map_output"];
