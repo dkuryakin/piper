@@ -120,9 +120,9 @@ const Input: FC<InputProps> = ({ value, handleId, nodeId }) => {
         type="source"
         position={Position.Right}
         id={handleId}
-        // isValidConnection={(connection) =>
-        //   isValidConnection(connection, nodes, edges)
-        // }
+        isValidConnection={(connection) =>
+          isValidConnection(connection, nodes, edges)
+        }
       />
     </div>
   );

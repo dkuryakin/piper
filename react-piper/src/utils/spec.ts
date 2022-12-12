@@ -135,10 +135,13 @@ export const isValidConnection = (
   const target = nodes.filter((node) => node.id === connection.target)[0];
 
   const isEdgeExist = edges.filter(
-    (edge) => edge.target === connection.target
+    (edge) => edge.targetHandle === connection.targetHandle
   )[0];
+
   if (isEdgeExist) {
     return false;
+  } else if (source.type === "input") {
+    return true;
   }
 
   let source_spec;
