@@ -11,6 +11,7 @@ import style from "./InputNode.module.css";
 import { v4 as uuid4 } from "uuid";
 import { isValidConnection } from "../../../utils/spec";
 import { IOutputInput } from "../../../types";
+import { getValidText } from "../../../utils/getValidText";
 
 interface AddInputButtonProps {
   nodeId: string;
@@ -97,7 +98,7 @@ const Input: FC<InputProps> = ({ value, handleId, nodeId }) => {
           node.data = {
             ...node.data,
             input: node.data.input.map(({ name, handleId }: IOutputInput) => ({
-              name: hId === handleId ? evt.target.value : name,
+              name: hId === handleId ? getValidText(evt.target.value) : name,
               handleId,
             })),
           };
