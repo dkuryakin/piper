@@ -156,16 +156,6 @@ const specMock = [
 
 const nodeSpec = [
   {
-    label: "Input",
-    type: "input",
-    input: [],
-  },
-  {
-    label: "Output",
-    type: "output",
-    output: [],
-  },
-  {
     label: "Map",
     type: "group",
     func: "map",
