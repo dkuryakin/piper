@@ -28,10 +28,10 @@ import { IExtraOutput } from "../../../types";
 import { RightSidebar } from "../../RightSidebar";
 
 const nodeTypes = {
-    input: InputNode,
-    default: FuncNode,
-    group: MapNode,
-    output: OutputNode,
+  input: InputNode,
+  default: FuncNode,
+  group: MapNode,
+  output: OutputNode,
 };
 
 const edgeTypes = {
@@ -182,6 +182,10 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
     );
 
     const deleteNode = (nodes: Node[]) => {
+        if (selectedNode?.data.type === 'map_input' || selectedNode?.data.type === 'map_output') {
+            return [...nodes];
+        }
+
         let _nodes = nodes.filter(node => !node.selected);
         while (true) {
             const nodeIds = new Set(_nodes.map(node => node.id));
