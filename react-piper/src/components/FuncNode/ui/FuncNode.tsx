@@ -1,12 +1,5 @@
 import React, { ChangeEvent, FC, memo } from "react";
-import {
-  Handle,
-  Position,
-  useEdges,
-  useNodes,
-  useReactFlow,
-  useStoreApi,
-} from "reactflow";
+import { Handle, Position, useEdges, useNodes, useReactFlow } from "reactflow";
 import style from "./FuncNode.module.css";
 import { v4 as uuid4 } from "uuid";
 import {
@@ -27,12 +20,11 @@ const AddOutputButton: FC<AddOutputButtonProps> = ({ nodeId, spec }) => {
   const val = Object.keys(options)[0];
 
   const { setNodes } = useReactFlow();
-  const store = useStoreApi();
+  const nodes = useNodes();
 
   const onAddOutput = () => {
-    const { nodeInternals } = store.getState();
     setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
+      nodes.map((node: any) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -66,13 +58,12 @@ interface DelOutputButtonProps {
 
 const DelOutputButton: FC<DelOutputButtonProps> = ({ nodeId, handleId }) => {
   const { setNodes } = useReactFlow();
-  const store = useStoreApi();
+  const nodes = useNodes();
   const hId = handleId;
 
   const onDelInput = () => {
-    const { nodeInternals } = store.getState();
     setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
+      nodes.map((node: any) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -157,15 +148,14 @@ interface InputProps {
 }
 
 const Input: FC<InputProps> = ({ nodeId, hId, index }) => {
-  const store = useStoreApi();
+  const nodes = useNodes();
   const { setNodes } = useReactFlow();
   const [value, setValue] = React.useState("0");
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const correctValue = e.target.value === "" ? "0" : e.target.value;
-    const { nodeInternals } = store.getState();
     setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
+      nodes.map((node: any) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
