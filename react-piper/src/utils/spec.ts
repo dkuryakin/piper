@@ -1,4 +1,4 @@
-import { Connection, Node } from "reactflow";
+import { Connection, Edge, Node } from "reactflow";
 import { IOutputInput } from "../types";
 
 export const specToNodes = (spec: any) =>
@@ -126,11 +126,19 @@ export const specToStr = (spec: any, maxLength?: number): string => {
   return _specToStr(spec);
 };
 
-export const isValidConnection = (connection: Connection, nodes: Node[]) => {
+export const isValidConnection = (
+  connection: Connection,
+  nodes: Node[],
+  edges: Edge[]
+) => {
   const source = nodes.filter((node) => node.id === connection.source)[0];
   const target = nodes.filter((node) => node.id === connection.target)[0];
 
-  if (source.type === "input") {
+  const isEdgeExist = edges.filter(
+    (edge) => edge.target === connection.target
+  )[0];
+  if (isEdgeExist) {
+    return false;
   }
 
   let source_spec;
