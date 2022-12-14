@@ -5,6 +5,18 @@
     height: 100%;
 }
 
+.react-flow__node.intersects {
+    background-color: #FF004D;
+}
+
+.react-flow__node.dragging.intersects-drag {
+    cursor: not-allowed;
+}
+
+.react-flow__node.intersects-drag {
+    border: 2px solid red;
+}
+
 .react-flow__node-group {
     width: auto;
 }
