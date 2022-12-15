@@ -5,7 +5,6 @@ import ReactFlow, {
   Connection,
   ConnectionLineType,
   Controls,
-  Edge,
   MarkerType,
   Node,
   ReactFlowInstance,
@@ -13,6 +12,7 @@ import ReactFlow, {
   SmoothStepEdge,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -64,11 +64,9 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
   const reactFlowWrapper = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { deleteElements } = useReactFlow();
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null);
-
-  const nodeExists = (nodes: Node[], nodeId: string) =>
-    nodes.filter((node) => node.id === nodeId).length > 0;
 
   const selectedNodes = nodes.filter((n) => n.selected);
   const selectedNode = selectedNodes.length === 1 ? selectedNodes[0] : null;
@@ -228,38 +226,48 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
     [reactFlowInstance, setNodes, getParentNode]
   );
 
-  const deleteNode = (nodes: Node[]) => {
-    const type = selectedNode?.data.type || selectedNode?.type || "";
-    if (unRemovableNodeTypes.includes(type)) {
-      return [...nodes];
-    }
-
-    let _nodes = nodes.filter((node) => !node.selected);
-    while (true) {
-      const nodeIds = new Set(_nodes.map((node) => node.id));
-      const len = _nodes.length;
-      _nodes = _nodes.filter(
-        (node) => !node.parentNode || nodeIds.has(node.parentNode)
-      );
-      if (_nodes.length === len) {
-        break;
-      }
-    }
-    return _nodes;
-  };
-
   useKeyPress(["Delete"], () => {
-    setNodes((nodes: Node[]) => {
-      const _nodes = deleteNode(nodes);
-      setEdges((edges: Edge[]) =>
-        edges.filter(
-          (edge) =>
-            !edge.selected &&
-            nodeExists(_nodes, edge.source) &&
-            nodeExists(_nodes, edge.target)
-        )
-      );
-      return _nodes;
+    const nodesToDelete = nodes.filter(
+      (node) => node.selected && !unRemovableNodeTypes.includes(node.data.type)
+    );
+    const edgesToDelete = edges.filter((edge) => edge.selected);
+
+    const mapInputIds = nodesToDelete.map((node) => {
+      const edge = edges.find((edge) => edge.source === node.id);
+      const targetNode = nodes.find((n) => n.id === edge?.target);
+      if (targetNode?.data.type === "map_input") {
+        return targetNode.id;
+      }
+    });
+
+    edgesToDelete.forEach((edge) => {
+      const targetNode = nodes.find((n) => n.id === edge.target);
+      if (targetNode?.data.type === "map_input") {
+        mapInputIds.push(targetNode.id);
+      }
+    });
+
+    const newNodes = nodes.map((node) => {
+      if (mapInputIds.includes(node.id)) {
+        node.data = {
+          ...node.data,
+          input: { item: "?" },
+          output: "?",
+          extra_output: [],
+        };
+      }
+      return node;
+    });
+
+    const extraEdgesToDelete = edges.filter((edge) =>
+      mapInputIds.includes(edge.source)
+    );
+
+    setNodes(newNodes);
+
+    deleteElements({
+      nodes: nodesToDelete,
+      edges: edgesToDelete.concat(extraEdgesToDelete),
     });
   });
 
