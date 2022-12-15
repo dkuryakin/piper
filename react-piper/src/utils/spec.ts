@@ -98,6 +98,7 @@ const _specToStr = (spec: any, depth?: number): string => {
         "]"
       );
     }
+
     return spec.type;
   }
   return "?";

@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, FC } from "react";
 import { toSvg } from "html-to-image";
 import { message } from "../../../utils/toasts";
 import style from "./DownloadPipelineImage.module.css";
@@ -16,7 +16,7 @@ function downloadImage(dataUrl: string, filename: string) {
   a.click();
 }
 
-export const DownloadPipelineImage = () => {
+export const DownloadPipelineImage: FC = () => {
   const [filename, setFilename] = React.useState("");
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
