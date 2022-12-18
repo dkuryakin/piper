@@ -1,11 +1,5 @@
 import React, { ChangeEvent, FC } from "react";
-import {
-  Handle,
-  Position,
-  useNodes,
-  useReactFlow,
-  useStoreApi,
-} from "reactflow";
+import { Handle, Position, useReactFlow } from "reactflow";
 import style from "./OutputNode.module.css";
 import { v4 as uuid4 } from "uuid";
 import { IOutputInput } from "../../../types";
@@ -17,12 +11,10 @@ interface AddOutputButtonProps {
 
 const AddOutputButton: FC<AddOutputButtonProps> = ({ nodeId }) => {
   const { setNodes } = useReactFlow();
-  const store = useStoreApi();
 
   const onAddOutput = () => {
-    const { nodeInternals } = store.getState();
-    setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -48,14 +40,12 @@ interface DelOutputButtonProps {
 }
 
 const DelOutputButton: FC<DelOutputButtonProps> = ({ nodeId, handleId }) => {
-  const { setNodes } = useReactFlow();
-  const store = useStoreApi();
+  const { setNodes, setEdges } = useReactFlow();
   const hId = handleId;
 
   const onDelOutput = () => {
-    const { nodeInternals } = store.getState();
-    setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -67,6 +57,10 @@ const DelOutputButton: FC<DelOutputButtonProps> = ({ nodeId, handleId }) => {
 
         return node;
       })
+    );
+
+    setEdges((edges) =>
+      edges.filter(({ targetHandle }) => targetHandle !== hId)
     );
   };
 
@@ -85,12 +79,11 @@ interface OutputProps {
 
 const Output: FC<OutputProps> = ({ value, handleId, nodeId }) => {
   const { setNodes } = useReactFlow();
-  const nodes = useNodes();
   const hId = handleId;
 
   const onChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    setNodes(
-      nodes.map((node: any) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,

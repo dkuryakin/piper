@@ -1,12 +1,5 @@
 import React, { ChangeEvent, FC, memo } from "react";
-import {
-  Handle,
-  Position,
-  useEdges,
-  useNodes,
-  useReactFlow,
-  useStoreApi,
-} from "reactflow";
+import { Handle, Position, useEdges, useNodes, useReactFlow } from "reactflow";
 import style from "./InputNode.module.css";
 import { v4 as uuid4 } from "uuid";
 import { isValidConnection } from "../../../utils/spec";
@@ -19,12 +12,10 @@ interface AddInputButtonProps {
 
 const AddInputButton: FC<AddInputButtonProps> = ({ nodeId }) => {
   const { setNodes } = useReactFlow();
-  const store = useStoreApi();
 
   const onAddInput = () => {
-    const { nodeInternals } = store.getState();
-    setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -50,14 +41,12 @@ interface DelInputButtonProps {
 }
 
 const DelInputButton: FC<DelInputButtonProps> = ({ nodeId, handleId }) => {
-  const { setNodes } = useReactFlow();
-  const store = useStoreApi();
+  const { setNodes, setEdges } = useReactFlow();
   const hId = handleId;
 
   const onDelInput = () => {
-    const { nodeInternals } = store.getState();
-    setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -69,6 +58,9 @@ const DelInputButton: FC<DelInputButtonProps> = ({ nodeId, handleId }) => {
 
         return node;
       })
+    );
+    setEdges((edges) =>
+      edges.filter(({ sourceHandle }) => sourceHandle !== hId)
     );
   };
 
@@ -92,8 +84,8 @@ const Input: FC<InputProps> = ({ value, handleId, nodeId }) => {
   const hId = handleId;
 
   const onChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    setNodes(
-      nodes.map((node: any) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,

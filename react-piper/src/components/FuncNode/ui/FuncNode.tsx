@@ -20,11 +20,10 @@ const AddOutputButton: FC<AddOutputButtonProps> = ({ nodeId, spec }) => {
   const val = Object.keys(options)[0];
 
   const { setNodes } = useReactFlow();
-  const nodes = useNodes();
 
   const onAddOutput = () => {
-    setNodes(
-      nodes.map((node: any) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -57,13 +56,11 @@ interface DelOutputButtonProps {
 }
 
 const DelOutputButton: FC<DelOutputButtonProps> = ({ nodeId, handleId }) => {
-  const { setNodes } = useReactFlow();
-  const nodes = useNodes();
+  const { setNodes, setEdges } = useReactFlow();
   const hId = handleId;
-
   const onDelInput = () => {
-    setNodes(
-      nodes.map((node: any) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
@@ -75,6 +72,10 @@ const DelOutputButton: FC<DelOutputButtonProps> = ({ nodeId, handleId }) => {
 
         return node;
       })
+    );
+
+    setEdges((edges) =>
+      edges.filter(({ sourceHandle }) => sourceHandle !== hId)
     );
   };
 
@@ -148,14 +149,13 @@ interface InputProps {
 }
 
 const Input: FC<InputProps> = ({ nodeId, hId, index }) => {
-  const nodes = useNodes();
   const { setNodes } = useReactFlow();
   const [value, setValue] = React.useState("0");
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const correctValue = e.target.value === "" ? "0" : e.target.value;
-    setNodes(
-      nodes.map((node: any) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
         if (node.id === nodeId) {
           node.data = {
             ...node.data,

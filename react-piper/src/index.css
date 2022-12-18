@@ -33,12 +33,12 @@ code {
 }
 
 .react-flow {
-    background: #1a365d;
+    background: #1a365d14;
 }
 
 div.react-flow__node {
-    background-color: rgb(66, 153, 225);
-    border: 1px solid #FFFFFF;
+    background-color: #4299e13b;
+    /*border: 1px solid #FFFFFF;*/
 }
 
 .react-flow__node-group {
