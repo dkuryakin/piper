@@ -135,6 +135,15 @@ export const isValidConnection = (
   const source = nodes.filter((node) => node.id === connection.source)[0];
   const target = nodes.filter((node) => node.id === connection.target)[0];
 
+  const isLooping =
+    edges.filter(
+      (edge) => edge.source === target.id && edge.target === source.id
+    ).length > 0;
+
+  if (isLooping) {
+    return false;
+  }
+
   const isEdgeExist = edges.filter(
     (edge) => edge.targetHandle === connection.targetHandle
   )[0];
