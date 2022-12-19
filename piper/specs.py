@@ -18,7 +18,7 @@ def type_to_spec(t: type) -> Any:
         return {'type': 'float'}
     if t is bool:
         return {'type': 'boolean'}
-    if isinstance(t, ndarray):
+    if t is ndarray:
         return {'type': 'tensor'}
     if t is Any:
         return {'type': 'any'}
