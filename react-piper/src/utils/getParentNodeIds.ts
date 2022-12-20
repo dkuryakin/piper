@@ -1,6 +1,6 @@
 import { Node } from "reactflow";
 
-export const getPrevParentNodesIds = (
+export const getParentNodeIds = (
   nodes: Node[],
   node: Node,
   endNode?: Node
@@ -14,7 +14,7 @@ export const getPrevParentNodesIds = (
     result.push(node.parentNode);
   }
   if (parent?.parentNode) {
-    result.push(...getPrevParentNodesIds(nodes, parent));
+    result.push(...getParentNodeIds(nodes, parent));
   }
   return result;
 };

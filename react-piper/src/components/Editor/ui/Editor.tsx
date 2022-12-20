@@ -12,7 +12,6 @@ import ReactFlow, {
   Connection,
   ConnectionLineType,
   Controls,
-  Edge,
   MarkerType,
   Node,
   ReactFlowInstance,
@@ -34,7 +33,7 @@ import { OutputNode } from "../../OutputNode";
 import { v4 as uuid4 } from "uuid";
 import { IExtraOutput } from "../../../types";
 import { RightSidebar } from "../../RightSidebar";
-import { getPrevParentNodesIds } from "../../../utils/getPrevParentNodesIds";
+import { getParentNodeIds } from "../../../utils/getParentNodeIds";
 import { isNodeNested } from "../../../utils/isNodeNested";
 
 const nodeTypes = {
@@ -283,68 +282,68 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
   });
 
   const onNodeDrag = useCallback(
-      (_: MouseEvent, node: Node) => {
-        let intersections: string[] = getIntersectingNodes(node)
-            .map((n) => n.id)
-            .filter((id) => {
-              const n = nodes.find((n) => n.id === id);
-              return n && n.type === "group";
-            });
-        if (node?.type === "group" || node?.parentNode) {
-          const prevParentNodesIds = getPrevParentNodesIds(nodes, node);
-          intersections = intersections.filter((id: string) => {
-            const n = nodes.find((n) => n.id === id);
-            if (n && isNodeNested(nodes, n, node)) {
-              prevParentNodesIds.push(n.id);
-            }
-            return !prevParentNodesIds.includes(id);
-          });
-        }
+    (_: MouseEvent, node: Node) => {
+      let intersections: string[] = getIntersectingNodes(node)
+        .map((n) => n.id)
+        .filter((id) => {
+          const n = nodes.find((n) => n.id === id);
+          return n && n.type === "group";
+        });
+      if (node?.type === "group" || node?.parentNode) {
+        const prevParentNodesIds = getParentNodeIds(nodes, node);
+        intersections = intersections.filter((id: string) => {
+          const n = nodes.find((n) => n.id === id);
+          if (n && isNodeNested(nodes, n, node)) {
+            prevParentNodesIds.push(n.id);
+          }
+          return !prevParentNodesIds.includes(id);
+        });
+      }
 
-        setNodes((nodes) =>
-            nodes.map((n) => ({
-              ...n,
-              className: intersections.includes(n.id)
-                  ? "intersects"
-                  : n.id === node.id && intersections.length
-                      ? "intersects-drag"
-                      : "",
-            }))
-        );
-      },
-      [nodes]
+      setNodes((nodes) =>
+        nodes.map((n) => ({
+          ...n,
+          className: intersections.includes(n.id)
+            ? "intersects"
+            : n.id === node.id && intersections.length
+            ? "intersects-drag"
+            : "",
+        }))
+      );
+    },
+    [nodes]
   );
   return (
-      <div className="dndflow">
-        <LeftSidebar specs_url={specs_url} />
-        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-          <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onNodeDrag={onNodeDrag}
-              onConnect={onConnect}
-              onInit={setReactFlowInstance}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              fitView
-              nodeTypes={nodeTypes}
-              edgeTypes={edgeTypes}
-              connectionLineType={ConnectionLineType.SmoothStep}
-          >
-            <Controls />
-          </ReactFlow>
-        </div>
-        <RightSidebar
-            selectedNode={selectedNode}
-            nodes={nodes}
-            edges={edges}
-            reactFlowInstance={reactFlowInstance}
-            setNodes={setNodes}
-            setEdges={setEdges}
-        />
+    <div className="dndflow">
+      <LeftSidebar specs_url={specs_url} />
+      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodeDrag={onNodeDrag}
+          onConnect={onConnect}
+          onInit={setReactFlowInstance}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          fitView
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          connectionLineType={ConnectionLineType.SmoothStep}
+        >
+          <Controls />
+        </ReactFlow>
       </div>
+      <RightSidebar
+        selectedNode={selectedNode}
+        nodes={nodes}
+        edges={edges}
+        reactFlowInstance={reactFlowInstance}
+        setNodes={setNodes}
+        setEdges={setEdges}
+      />
+    </div>
   );
 };
 
