@@ -1,7 +1,8 @@
 from dataclasses import is_dataclass
+from inspect import isclass
 from typing import Any, Dict, get_args, get_origin, List, Union
 
-from numpy import ndarray
+import numpy as np
 
 from .pipeline import Pipeline
 
@@ -10,7 +11,7 @@ def type_to_spec(t: type) -> Any:
     # scalar types
     if t is str:
         return {'type': 'string'}
-    if t is bytes:
+    if isclass(t) and issubclass(t, bytes):
         return {'type': 'bytes'}
     if t is int:
         return {'type': 'integer'}
@@ -18,7 +19,7 @@ def type_to_spec(t: type) -> Any:
         return {'type': 'float'}
     if t is bool:
         return {'type': 'boolean'}
-    if t is ndarray:
+    if isclass(t) and issubclass(t, np.ndarray):
         return {'type': 'tensor'}
     if t is Any:
         return {'type': 'any'}
