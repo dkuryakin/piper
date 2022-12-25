@@ -9,6 +9,7 @@ import {
 } from "../../../utils/spec";
 import { IExtraOutput } from "../../../types";
 import { MAX_TYPE_LENGTH } from "../../../constants";
+import {objectSetOrExcludeField} from "../../../utils/objects";
 
 interface AddOutputButtonProps {
   nodeId: string;
@@ -96,6 +97,24 @@ interface InputParamProps {
 const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
   const edges = useEdges();
   const nodes = useNodes();
+  const { setNodes } = useReactFlow();
+  const [value, setValue] = React.useState("");
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === nodeId) {
+            node.data = {
+              ...node.data,
+              params: objectSetOrExcludeField(node.data.params, name, e.target.value),
+            };
+          }
+
+          return node;
+        })
+    );
+    setValue(e.target.value);
+  };
 
   return (
     <div className={style.inputParam}>
@@ -110,6 +129,13 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
       />
       <div className={style.inputParamBody}>
         {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
+        {spec.type === 'string' && (
+            <input
+                className={style.inputInput}
+                value={value}
+                onChange={onChange}
+            />
+        )}
       </div>
     </div>
   );

@@ -254,6 +254,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
           input: { item: "?" },
           output: "?",
           extra_output: [],
+          params: {},
         };
       }
       return node;

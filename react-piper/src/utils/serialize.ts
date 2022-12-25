@@ -59,6 +59,7 @@ const genStagesSpec = (nodes: Node[], edges: Edge[], node: Node, stages_ids: Set
             func,
             name: node.id,
             input: input_spec,
+            params: node.data.params,
         }
     }
 
