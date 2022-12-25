@@ -43,7 +43,9 @@ const genStagesSpec = (nodes: Node[], edges: Edge[], node: Node, stages_ids: Set
     let input_spec: any = {};
     for (let key of Object.keys(input)) {
         const targetHandle = `func-node-${node.id}-input.${key}`;
-        input_spec[key] = genInputByHandle(nodes, edges, targetHandle);
+        if (!node?.data?.params?.hasOwnProperty(key)) {
+            input_spec[key] = genInputByHandle(nodes, edges, targetHandle);
+        }
     }
 
     let spec;
