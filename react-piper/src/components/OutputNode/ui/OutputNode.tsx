@@ -145,14 +145,12 @@ export const OutputNode: FC<OutputNodeProps> = ({ id, data }) => {
           <Output key={handleId} nodeId={id} value={name} handleId={handleId} />
         ))}
       </div>
-      {data.type === "map_output" ? (
+      {data.type === "map_output" && (
         <Handle
           type="source"
           position={Position.Right}
           id={`${id}-map-output`}
         />
-      ) : (
-        ""
       )}
     </div>
   );

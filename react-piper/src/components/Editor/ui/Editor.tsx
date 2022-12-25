@@ -1,4 +1,11 @@
-import React, { DragEvent, FC, useCallback, useRef, useState } from "react";
+import React, {
+  DragEvent,
+  FC,
+  MouseEvent,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import { useKeyPress } from "../../../hooks/useKeyPress";
 import ReactFlow, {
   addEdge,
@@ -26,6 +33,8 @@ import { OutputNode } from "../../OutputNode";
 import { v4 as uuid4 } from "uuid";
 import { IExtraOutput } from "../../../types";
 import { RightSidebar } from "../../RightSidebar";
+import { getParentNodeIds } from "../../../utils/getParentNodeIds";
+import { isNodeNested } from "../../../utils/isNodeNested";
 
 const nodeTypes = {
   input: InputNode,
@@ -64,6 +73,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
   const reactFlowWrapper = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { getIntersectingNodes } = useReactFlow();
   const { deleteElements } = useReactFlow();
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null);
@@ -272,6 +282,38 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
     });
   });
 
+  const onNodeDrag = useCallback(
+    (_: MouseEvent, node: Node) => {
+      let intersections: string[] = getIntersectingNodes(node)
+        .map((n) => n.id)
+        .filter((id) => {
+          const n = nodes.find((n) => n.id === id);
+          return n && n.type === "group";
+        });
+      if (node?.type === "group" || node?.parentNode) {
+        const prevParentNodesIds = getParentNodeIds(nodes, node);
+        intersections = intersections.filter((id: string) => {
+          const n = nodes.find((n) => n.id === id);
+          if (n && isNodeNested(nodes, n, node)) {
+            prevParentNodesIds.push(n.id);
+          }
+          return !prevParentNodesIds.includes(id);
+        });
+      }
+
+      setNodes((nodes) =>
+        nodes.map((n) => ({
+          ...n,
+          className: intersections.includes(n.id)
+            ? "intersects"
+            : n.id === node.id && intersections.length
+            ? "intersects-drag"
+            : "",
+        }))
+      );
+    },
+    [nodes]
+  );
   return (
     <div className="dndflow">
       <LeftSidebar specs_url={specs_url} />
@@ -281,6 +323,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onNodeDrag={onNodeDrag}
           onConnect={onConnect}
           onInit={setReactFlowInstance}
           onDrop={onDrop}
