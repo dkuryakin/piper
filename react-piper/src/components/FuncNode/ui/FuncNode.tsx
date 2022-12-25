@@ -9,7 +9,7 @@ import {
 } from "../../../utils/spec";
 import { IExtraOutput } from "../../../types";
 import { MAX_TYPE_LENGTH } from "../../../constants";
-import {objectSetOrExcludeField} from "../../../utils/objects";
+import { objectSetOrExcludeField } from "../../../utils/objects";
 
 interface AddOutputButtonProps {
   nodeId: string;
@@ -97,21 +97,25 @@ interface InputParamProps {
 const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
   const edges = useEdges();
   const nodes = useNodes();
-  const { setNodes } = useReactFlow();
-  const [value, setValue] = React.useState("");
-
+  const { setNodes, getNode } = useReactFlow();
+  const inputValue = getNode(nodeId)?.data?.params?.[name] || "";
+  const [value, setValue] = React.useState(inputValue);
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNodes((nodes) =>
-        nodes.map((node) => {
-          if (node.id === nodeId) {
-            node.data = {
-              ...node.data,
-              params: objectSetOrExcludeField(node.data.params, name, e.target.value),
-            };
-          }
+      nodes.map((node) => {
+        if (node.id === nodeId) {
+          node.data = {
+            ...node.data,
+            params: objectSetOrExcludeField(
+              node.data.params,
+              name,
+              e.target.value
+            ),
+          };
+        }
 
-          return node;
-        })
+        return node;
+      })
     );
     setValue(e.target.value);
   };
@@ -129,12 +133,12 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
       />
       <div className={style.inputParamBody}>
         {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
-        {spec.type === 'string' && (
-            <input
-                className={style.inputInput}
-                value={value}
-                onChange={onChange}
-            />
+        {spec.type === "string" && (
+          <input
+            className={style.inputInput}
+            value={value}
+            onChange={onChange}
+          />
         )}
       </div>
     </div>
@@ -175,8 +179,12 @@ interface InputProps {
 }
 
 const Input: FC<InputProps> = ({ nodeId, hId, index }) => {
-  const { setNodes } = useReactFlow();
-  const [value, setValue] = React.useState("0");
+  const { setNodes, getNode } = useReactFlow();
+  const extraOutput = getNode(nodeId)?.data?.extra_output?.find(
+    (output: IExtraOutput) => output.handleId === hId
+  );
+  const nodeIndex = extraOutput?.indexes ? extraOutput.indexes[index] : "0";
+  const [value, setValue] = React.useState(nodeIndex);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const correctValue = e.target.value === "" ? "0" : e.target.value;
