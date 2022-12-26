@@ -97,9 +97,20 @@ interface InputParamProps {
 const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
   const edges = useEdges();
   const nodes = useNodes();
-  const { setNodes, getNode } = useReactFlow();
+  const { setNodes, getNode, deleteElements } = useReactFlow();
+  const targetEdge = edges.find((edge) => edge.targetHandle === handleId);
   const inputValue = getNode(nodeId)?.data?.params?.[name] || "";
   const [value, setValue] = React.useState(inputValue);
+  const [checked, setChecked] = React.useState<boolean>(false);
+
+  const onCheckboxChange = () => {
+    setChecked(!checked);
+
+    targetEdge &&
+      deleteElements({
+        edges: [targetEdge],
+      });
+  };
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNodes((nodes) =>
       nodes.map((node) => {
@@ -122,23 +133,48 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
 
   return (
     <div className={style.inputParam}>
-      <Handle
-        className={style.inputHandle}
-        type="target"
-        position={Position.Left}
-        id={handleId}
-        isValidConnection={(connection) =>
-          isValidConnection(connection, nodes, edges)
-        }
-      />
-      <div className={style.inputParamBody}>
-        {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
-        {spec.type === "string" && (
+      {spec.type === "string" && (
+        <label className={style.checkboxWrapper}>
           <input
-            className={style.inputInput}
-            value={value}
-            onChange={onChange}
+            className={style.checkbox}
+            type="checkbox"
+            checked={checked}
+            onChange={onCheckboxChange}
           />
+          <span className={style.label}>params</span>
+        </label>
+      )}
+      {!checked && (
+        <Handle
+          className={`${style.inputHandle} ${
+            spec.type === "string" ? style.paramsInputHandle : ""
+          }`}
+          type="target"
+          position={Position.Left}
+          id={handleId}
+          isValidConnection={(connection) =>
+            isValidConnection(connection, nodes, edges)
+          }
+        />
+      )}
+      <div className={style.inputParamBody}>
+        {checked ? (
+          <label className={style.paramsLabel}>
+            <input
+              placeholder="Посхалка для Давида"
+              className={style.paramsInput}
+              type="text"
+              value={value}
+              onChange={onChange}
+            />
+            <span className={style.paramsSpan}>
+              {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
+            </span>
+          </label>
+        ) : (
+          <div>
+            {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
+          </div>
         )}
       </div>
     </div>
