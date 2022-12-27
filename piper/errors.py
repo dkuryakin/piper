@@ -22,7 +22,7 @@ def format_error_block(text: str, error: str) -> str:
 
 
 def encode_error(obj: Any, indent: int = 4, depth: int = 0, exc: BaseException = None):
-    stage = getattr(exc, 'stage')
+    stage = getattr(exc, 'stage', None)
     prefix0 = ' ' * depth * indent
     prefix1 = ' ' * (depth + 1) * indent
 
