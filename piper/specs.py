@@ -6,6 +6,12 @@ import numpy as np
 
 from .pipeline import Pipeline
 
+INTERNAL_FUNCTIONS = (
+    'map',
+    'remap_regex',
+    'case_regex',
+)
+
 
 def type_to_spec(t: type) -> Any:
     # scalar types
@@ -57,7 +63,7 @@ def type_to_spec(t: type) -> Any:
     raise TypeError(f'unserializeble type: {t}')
 
 
-def generate_specs(exclude_funcs: List[str] = ('map',)) -> List[Dict[str, Any]]:
+def generate_specs(exclude_funcs: List[str] = INTERNAL_FUNCTIONS) -> List[Dict[str, Any]]:
     specs = []
     for func in Pipeline.functions:
         if func in exclude_funcs:
