@@ -161,7 +161,7 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
         {checked ? (
           <label className={style.paramsLabel}>
             <input
-              placeholder="Посхалка для Давида"
+              placeholder="const value"
               className={style.paramsInput}
               type="text"
               value={value}
