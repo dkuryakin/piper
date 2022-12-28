@@ -36,7 +36,7 @@ async def remap_regex(source: str, items: List[Tuple[str, str]], default: str) -
 async def case_regex(  # noqa
         data: Any,
         source: str,
-        items: List[str, Dict[str, Any]],
+        items: List[Tuple[str, Dict[str, Any]]],
         default: Dict[str, Any],
         __pipeline: Pipeline,
 ) -> Any:
