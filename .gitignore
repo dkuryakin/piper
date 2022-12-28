@@ -2,3 +2,4 @@
 examples
 piper/__pycache__
 *.pyc
+Piper.egg-info
