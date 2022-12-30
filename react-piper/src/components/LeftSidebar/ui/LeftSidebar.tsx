@@ -34,6 +34,24 @@ const specMock = [
     description: "Find documents on the image.",
   },
   {
+    func: "split",
+    input: { string: { type: "string" } },
+    output: {
+      type: "array",
+      value_type: { type: "string" },
+    },
+  },
+  {
+    func: "concat",
+    input: {
+      items: {
+        type: "array",
+        value_type: { type: "string" },
+      }
+    },
+    output: { type: "string" },
+  },
+  {
     func: "enrich_list",
     input: { items: { type: "array", value_type: { type: "any" } } },
     output: {

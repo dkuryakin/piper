@@ -24,8 +24,12 @@ const getPairEdgeByHandle = (nodes: Node[], edges: Edge[], handleId: string) => 
     return edge.sourceHandle;
 }
 
+const getMapOutputNode = (nodes: Node[], edges: Edge[], input_node: Node) => {
+    return nodes.filter(node => node.parentNode === input_node.parentNode && node.data.type === 'map_output')[0];
+}
+
 const genMapSpec = (nodes: Node[], edges: Edge[], input_node: Node, stages_ids: Set<string>) => {
-    const output_node = nodes.filter(node => node.parentNode === input_node.parentNode && node.data.type === 'map_output')[0];
+    const output_node = getMapOutputNode(nodes, edges, input_node);
     return genPipelineSpec(nodes, edges, input_node, output_node, stages_ids);
 }
 
@@ -48,6 +52,11 @@ const genStagesSpec = (nodes: Node[], edges: Edge[], node: Node, stages_ids: Set
         }
     }
 
+    const outputHandles = [
+        `func-node-${node.id}-output`,
+        ...extra_output.map(({handleId}: IOutputInput) => handleId),
+    ]
+
     let spec;
     if (node.data.type === 'map_input') {
         spec = {
@@ -56,6 +65,8 @@ const genStagesSpec = (nodes: Node[], edges: Edge[], node: Node, stages_ids: Set
             input: {'items': input_spec['item']},
             params: genMapSpec(nodes, edges, node, stages_ids),
         }
+        const output_node = getMapOutputNode(nodes, edges, node);
+        outputHandles.push(`${output_node.id}-map-output`);
     } else {
         spec = {
             func,
@@ -65,10 +76,6 @@ const genStagesSpec = (nodes: Node[], edges: Edge[], node: Node, stages_ids: Set
         }
     }
 
-    const outputHandles = [
-        `func-node-${node.id}-output`,
-        ...extra_output.map(({handleId}: IOutputInput) => handleId),
-    ]
     let specs = [spec];
     for (let outputHandle of outputHandles) {
         // console.log(outputHandle)
