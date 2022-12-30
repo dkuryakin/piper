@@ -42,6 +42,10 @@ div.react-flow__node {
     /*border: 1px solid #FFFFFF;*/
 }
 
+.div.react-flow__node.string_mapper {
+    width: 300px;
+}
+
 .react-flow__node-group {
     width: auto;
 }

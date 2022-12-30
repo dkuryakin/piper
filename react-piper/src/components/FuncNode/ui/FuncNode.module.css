@@ -15,6 +15,10 @@
     align-items: center;
 }
 
+.inputParamBody.checked {
+    margin-top: 20px;
+}
+
 .paramsBox {
     position: relative;
 }
@@ -57,7 +61,7 @@
 }
 
 .inputHandle {
-    top: 8px;
+    top: 10px;
     left: -14.5px;
 }
 
@@ -109,16 +113,12 @@
     padding: 1px 2px;
 }
 
-.checkboxWrapper {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
 .checkbox {
     width: 12px;
     height: 12px;
     display: block;
+    margin-right: 5px;
+    margin-top: 1px;
 }
 
 .label {
@@ -127,5 +127,35 @@
 }
 
 .paramsInputHandle {
-    top: 43px;
+    top: 10px;
+}
+
+.stringMap {
+    margin-bottom: 30px;
+}
+
+
+.stringMapper {
+    display: flex;
+    align-self: center;
+    margin-bottom: 10px;
+}
+
+.stringMapperInput {
+    width: 100%;
+}
+
+.stringMapperInput::placeholder {
+    font-size: 12px;
+}
+
+.addStringMapperButton {
+    width: 100%;
+}
+
+.delStringMapperButton {
+    border: none;
+    background-color: rgb(99, 179, 237);
+    cursor: pointer;
+    padding: 2px 7px;
 }

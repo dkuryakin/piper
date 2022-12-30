@@ -152,6 +152,16 @@ const specMock = [
     },
     description: "Convert image with text to string and confidence.",
   },
+  {
+    func: "string_map",
+    input: {
+      value: { type: "string" },
+    },
+    output: {
+      type: "string",
+    },
+    description: "Match a string to the form specified in the RegExp",
+  },
 ];
 
 const nodeSpec = [

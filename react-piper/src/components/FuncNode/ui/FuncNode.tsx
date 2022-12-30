@@ -10,6 +10,7 @@ import {
 import { IExtraOutput } from "../../../types";
 import { MAX_TYPE_LENGTH } from "../../../constants";
 import { objectSetOrExcludeField } from "../../../utils/objects";
+import { message } from "../../../utils/toasts";
 
 interface AddOutputButtonProps {
   nodeId: string;
@@ -133,17 +134,6 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
 
   return (
     <div className={style.inputParam}>
-      {spec.type === "string" && (
-        <label className={style.checkboxWrapper}>
-          <input
-            className={style.checkbox}
-            type="checkbox"
-            checked={checked}
-            onChange={onCheckboxChange}
-          />
-          <span className={style.label}>params</span>
-        </label>
-      )}
       {!checked && (
         <Handle
           className={`${style.inputHandle} ${
@@ -157,7 +147,17 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
           }
         />
       )}
-      <div className={style.inputParamBody}>
+      <div
+        className={`${style.inputParamBody} ${checked ? style.checked : ""}`}
+      >
+        {spec.type === "string" && (
+          <input
+            className={style.checkbox}
+            type="checkbox"
+            checked={checked}
+            onChange={onCheckboxChange}
+          />
+        )}
         {checked ? (
           <label className={style.paramsLabel}>
             <input
@@ -172,9 +172,9 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
             </span>
           </label>
         ) : (
-          <div>
+          <>
             {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
-          </div>
+          </>
         )}
       </div>
     </div>
@@ -337,6 +337,108 @@ const ExtraOutput: FC<ExtraOutputProps> = ({
   );
 };
 
+interface StringMapperProps {
+  id: string;
+  onDelete: (id: string) => void;
+}
+
+const StringMapper: FC<StringMapperProps> = ({ onDelete, id }) => {
+  const [regExpValue, setRegExpValue] = React.useState("");
+  const [replaceValue, setReplaceValue] = React.useState("");
+
+  const onChangeRegExp = (e: ChangeEvent<HTMLInputElement>) => {
+    setRegExpValue(e.target.value);
+  };
+
+  const onChangeReplace = (e: ChangeEvent<HTMLInputElement>) => {
+    setReplaceValue(e.target.value);
+  };
+
+  return (
+    <div className={style.stringMapper}>
+      <input
+        className={style.stringMapperInput}
+        value={regExpValue}
+        onChange={onChangeRegExp}
+        type="text"
+        placeholder="RegExp"
+      />
+      <input
+        className={style.stringMapperInput}
+        value={replaceValue}
+        onChange={onChangeReplace}
+        type="text"
+        placeholder="Replacement"
+      />
+      <button
+        className={style.delStringMapperButton}
+        onClick={() => onDelete(id)}
+      >
+        -
+      </button>
+    </div>
+  );
+};
+
+interface IStringMappers {
+  id: string;
+  Component: FC<StringMapperProps>;
+}
+
+const StringMap = () => {
+  const [stringMappers, setStringMappers] = React.useState<IStringMappers[]>([
+    {
+      id: uuid4(),
+      Component: StringMapper,
+    },
+  ]);
+
+  const addStringMapper = () => {
+    setStringMappers((stringMappers) => [
+      ...stringMappers,
+      {
+        id: uuid4(),
+        Component: StringMapper,
+      },
+    ]);
+  };
+
+  const delStringMapper = (id: string) => {
+    if (stringMappers.length === 1) {
+      message.error("You can't delete the last string mapper");
+      return;
+    }
+    setStringMappers(stringMappers.filter((mapper) => mapper.id !== id));
+  };
+
+  return (
+    <div className={style.stringMap}>
+      <div className={style.stringMappers}>
+        {stringMappers.map(({ id, Component }) => (
+          <div key={id}>
+            <Component id={id} onDelete={delStringMapper} />
+          </div>
+        ))}
+      </div>
+      <button className={style.addStringMapperButton} onClick={addStringMapper}>
+        +
+      </button>
+    </div>
+  );
+};
+
+const renderHeader = ({ data }: any) => {
+  return (
+    data?.func === "string_map" && (
+      <div className={style.header}>
+        <div>
+          <strong>{data?.label}</strong>
+        </div>
+      </div>
+    )
+  );
+};
+
 interface FuncNodeProps {
   id: string;
   data: any;
@@ -344,13 +446,10 @@ interface FuncNodeProps {
 
 export const FuncNode: FC<FuncNodeProps> = memo(({ id, data }) => {
   return (
-    <div className={style.funcNode}>
-      <div className={style.header}>
-        <div>
-          <strong>{data.label}</strong>
-        </div>
-      </div>
+    <div className={`${style.funcNode} string_mapper`}>
+      {renderHeader(data)}
       <div className={style.body}>
+        {data?.func === "string_map" && <StringMap />}
         {Object.keys(data.input).map((param_name) => (
           <InputParam
             key={param_name}
