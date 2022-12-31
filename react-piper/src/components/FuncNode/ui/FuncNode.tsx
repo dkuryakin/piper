@@ -465,7 +465,25 @@ const StringMap: FC<StringMapProps> = memo(({ nodeId, data }) => {
     setNodes(_nodes);
   };
 
+  const onChangeDefaultReplacement = (defaultReplacement: string) => {
+    const _nodes = nodes.map((node: any) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            params: {
+              ...node.data.params,
+              default: defaultReplacement,
+            },
+          },
+        };
+      }
 
+      return node;
+    });
+    setNodes(_nodes);
+  };
 
   return (
     <div className={style.stringMap}>
@@ -479,6 +497,13 @@ const StringMap: FC<StringMapProps> = memo(({ nodeId, data }) => {
       <button className={style.addStringMapperButton} onClick={addStringMapper}>
         +
       </button>
+      <input
+          className={style.stringMapperInput}
+          value={data?.params?.default}
+          onChange={e => onChangeDefaultReplacement(e.target.value)}
+          type="text"
+          placeholder="Replacement"
+      />
     </div>
   );
 });

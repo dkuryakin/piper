@@ -194,7 +194,10 @@ const nodeSpec = [
     output: {
       type: "string",
     },
-    params: {items: []},
+    params: {
+      items: [],
+      default: "",
+    },
     description: "Match a string to the form specified in the RegExp",
     category: ["system"],
   },
