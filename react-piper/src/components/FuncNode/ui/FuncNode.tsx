@@ -10,6 +10,7 @@ import {
 import { IExtraOutput } from "../../../types";
 import { MAX_TYPE_LENGTH } from "../../../constants";
 import { objectSetOrExcludeField } from "../../../utils/objects";
+import { message } from "../../../utils/toasts";
 
 interface AddOutputButtonProps {
   nodeId: string;
@@ -133,17 +134,6 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
 
   return (
     <div className={style.inputParam}>
-      {spec.type === "string" && (
-        <label className={style.checkboxWrapper}>
-          <input
-            className={style.checkbox}
-            type="checkbox"
-            checked={checked}
-            onChange={onCheckboxChange}
-          />
-          <span className={style.label}>params</span>
-        </label>
-      )}
       {!checked && (
         <Handle
           className={`${style.inputHandle} ${
@@ -157,7 +147,17 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
           }
         />
       )}
-      <div className={style.inputParamBody}>
+      <div
+        className={`${style.inputParamBody} ${checked ? style.checked : ""}`}
+      >
+        {spec.type === "string" && (
+          <input
+            className={style.checkbox}
+            type="checkbox"
+            checked={checked}
+            onChange={onCheckboxChange}
+          />
+        )}
         {checked ? (
           <label className={style.paramsLabel}>
             <input
@@ -172,9 +172,9 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
             </span>
           </label>
         ) : (
-          <div>
+          <>
             {name}: {specToStr(spec, MAX_TYPE_LENGTH)}
-          </div>
+          </>
         )}
       </div>
     </div>
@@ -337,6 +337,163 @@ const ExtraOutput: FC<ExtraOutputProps> = ({
   );
 };
 
+interface StringMapperProps {
+  regex: string;
+  replacement: string;
+  id: number;
+  nodeId: string;
+}
+
+const StringMapper: FC<StringMapperProps> = memo(({ nodeId, id, regex, replacement }) => {
+  const { setNodes, getNode } = useReactFlow();
+  const nodes = useNodes();
+
+  const onChange = (id: number, regex: string, replacement: string) => {
+    const _nodes = nodes.map((node: any) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            params: {
+              ...node.data.params,
+              items: node.data.params.items.map((item: object, i: number) => {
+                if (i === id) {
+                  return [regex, replacement];
+                }
+                return item;
+              }),
+            },
+          },
+        };
+      }
+
+      return node;
+    });
+    setNodes(_nodes);
+  };
+
+  const onDelete = () => {
+    const node = getNode(nodeId);
+    if (node?.data?.params?.items?.length <= 1) {
+      message.error("You can't delete the last string mapper");
+      return;
+    }
+    const _nodes = nodes.map((node: any) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            params: {
+              ...node.data.params,
+              items: node.data.params.items.filter((item: object, i: number) => i !== id),
+            },
+          },
+        };
+      }
+
+      return node;
+    });
+    setNodes(_nodes);
+  };
+
+  const onChangeRegExp = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(id, e.target.value, replacement);
+  };
+
+  const onChangeReplace = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(id, regex, e.target.value);
+  };
+
+  return (
+    <div className={style.stringMapper}>
+      <input
+        className={style.stringMapperInput}
+        value={regex}
+        onChange={onChangeRegExp}
+        type="text"
+        placeholder="RegExp"
+      />
+      <input
+        className={style.stringMapperInput}
+        value={replacement}
+        onChange={onChangeReplace}
+        type="text"
+        placeholder="Replacement"
+      />
+      <button
+        className={style.delStringMapperButton}
+        onClick={onDelete}
+      >
+        -
+      </button>
+    </div>
+  );
+});
+
+interface StringMapProps {
+  nodeId: string;
+  data: any;
+}
+
+const StringMap: FC<StringMapProps> = memo(({ nodeId, data }) => {
+  const { setNodes } = useReactFlow();
+  const nodes = useNodes();
+
+  const addStringMapper = () => {
+    const _nodes = nodes.map((node: any) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            params: {
+              ...node.data.params,
+              items: [
+                ...node.data.params.items,
+                ["", ""]
+              ]
+            },
+          },
+        };
+      }
+
+      return node;
+    });
+    setNodes(_nodes);
+  };
+
+
+
+  return (
+    <div className={style.stringMap}>
+      <div className={style.stringMappers}>
+        {data?.params?.items?.map(([regex, replacement]: any, index: number) => (
+          <div key={index}>
+            <StringMapper regex={regex} replacement={replacement} id={index} nodeId={nodeId} />
+          </div>
+        ))}
+      </div>
+      <button className={style.addStringMapperButton} onClick={addStringMapper}>
+        +
+      </button>
+    </div>
+  );
+});
+
+const renderHeader = ({ data }: any) => {
+  return (
+    data?.func === "remap_regex" && (
+      <div className={style.header}>
+        <div>
+          <strong>{data?.label}</strong>
+        </div>
+      </div>
+    )
+  );
+};
+
 interface FuncNodeProps {
   id: string;
   data: any;
@@ -344,13 +501,10 @@ interface FuncNodeProps {
 
 export const FuncNode: FC<FuncNodeProps> = memo(({ id, data }) => {
   return (
-    <div className={style.funcNode}>
-      <div className={style.header}>
-        <div>
-          <strong>{data.label}</strong>
-        </div>
-      </div>
+    <div className={`${style.funcNode} string_mapper`}>
+      {renderHeader(data)}
       <div className={style.body}>
+        {data?.func === "remap_regex" && <StringMap nodeId={id} data={data} />}
         {Object.keys(data.input).map((param_name) => (
           <InputParam
             key={param_name}

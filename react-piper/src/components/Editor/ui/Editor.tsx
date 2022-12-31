@@ -248,7 +248,8 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
       if (targetNode?.data.type === "map_input") {
         return targetNode.id;
       }
-    });
+      return null;
+    }).filter((item) => item !== null);
 
     edgesToDelete.forEach((edge) => {
       const targetNode = nodes.find((n) => n.id === edge.target);
@@ -312,7 +313,7 @@ const EditorWithNoProvider: FC<EditorWithNoProviderProps> = ({ specs_url }) => {
         }))
       );
     },
-    [nodes]
+    [nodes, getIntersectingNodes, setNodes]
   );
   return (
     <div className="dndflow">
