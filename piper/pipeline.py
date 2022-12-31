@@ -14,6 +14,7 @@ PIPELINE_TIMEOUT = 300
 
 class Pipeline:
     functions = {}
+    category = {}
 
     def __init__(self, spec: Dict[str, Any], timeout: float = PIPELINE_TIMEOUT):
         self._timeout = timeout

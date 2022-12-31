@@ -1,5 +1,5 @@
-from functools import wraps
-from typing import Any, Awaitable, Callable, Dict
+from functools import partial, wraps
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 
 from typeguard import typechecked
 
@@ -9,7 +9,10 @@ from .resolvers import resolve_args
 
 
 @typechecked
-def register(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
+def _register(
+        func: Callable[..., Awaitable[Any]],
+        category: Union[Tuple[str, ...], List[str]],
+) -> Callable[..., Awaitable[Any]]:
     @wraps(func)
     async def _func(*args, __stage: Dict[str, Any] = None, __pipeline: Pipeline = None, **kwargs):
         # __stage is passed from outer context for proper error handling
@@ -31,4 +34,14 @@ def register(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any
             raise e
 
     Pipeline.functions[func.__name__] = _func
+    Pipeline.category[func.__name__] = category
     return _func
+
+
+def register(
+        func: Optional[Callable[..., Awaitable[Any]]] = None,
+        category: Optional[Union[Tuple[str, ...], List[str]]] = None,
+) -> Callable[..., Awaitable[Any]]:
+    if func is None:
+        return partial(_register, category=category or ["default"])
+    return _register(func)

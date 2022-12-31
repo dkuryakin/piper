@@ -71,6 +71,7 @@ def generate_specs(exclude_funcs: List[str] = INTERNAL_FUNCTIONS) -> List[Dict[s
 
         doc = Pipeline.functions[func].__doc__
         annotations = Pipeline.functions[func].__annotations__
+        category = Pipeline.category[func]
         output_type = annotations.pop('return')
         output_spec = type_to_spec(output_type)
 
@@ -84,6 +85,7 @@ def generate_specs(exclude_funcs: List[str] = INTERNAL_FUNCTIONS) -> List[Dict[s
             'input': input_spec,
             'output': output_spec,
             'description': doc,
+            'category': category,
         }
         specs.append(spec)
     return specs
