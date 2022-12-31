@@ -153,13 +153,14 @@ const specMock = [
     description: "Convert image with text to string and confidence.",
   },
   {
-    func: "string_map",
+    func: "remap_regex",
     input: {
       value: { type: "string" },
     },
     output: {
       type: "string",
     },
+    params: {items: []},
     description: "Match a string to the form specified in the RegExp",
   },
 ];

@@ -338,85 +338,140 @@ const ExtraOutput: FC<ExtraOutputProps> = ({
 };
 
 interface StringMapperProps {
-  id: string;
-  onDelete: (id: string) => void;
+  regex: string;
+  replacement: string;
+  id: number;
+  nodeId: string;
 }
 
-const StringMapper: FC<StringMapperProps> = ({ onDelete, id }) => {
-  const [regExpValue, setRegExpValue] = React.useState("");
-  const [replaceValue, setReplaceValue] = React.useState("");
+const StringMapper: FC<StringMapperProps> = memo(({ nodeId, id, regex, replacement }) => {
+  const { setNodes, getNode } = useReactFlow();
+  const nodes = useNodes();
+
+  const onChange = (id: number, regex: string, replacement: string) => {
+    const _nodes = nodes.map((node: any) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            params: {
+              ...node.data.params,
+              items: node.data.params.items.map((item: object, i: number) => {
+                if (i === id) {
+                  return [regex, replacement];
+                }
+                return item;
+              }),
+            },
+          },
+        };
+      }
+
+      return node;
+    });
+    setNodes(_nodes);
+  };
+
+  const onDelete = () => {
+    const node = getNode(nodeId);
+    if (node?.data?.params?.items?.length <= 1) {
+      message.error("You can't delete the last string mapper");
+      return;
+    }
+    const _nodes = nodes.map((node: any) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            params: {
+              ...node.data.params,
+              items: node.data.params.items.filter((item: object, i: number) => i !== id),
+            },
+          },
+        };
+      }
+
+      return node;
+    });
+    setNodes(_nodes);
+  };
 
   const onChangeRegExp = (e: ChangeEvent<HTMLInputElement>) => {
-    setRegExpValue(e.target.value);
+    onChange(id, e.target.value, replacement);
   };
 
   const onChangeReplace = (e: ChangeEvent<HTMLInputElement>) => {
-    setReplaceValue(e.target.value);
+    onChange(id, regex, e.target.value);
   };
 
   return (
     <div className={style.stringMapper}>
       <input
         className={style.stringMapperInput}
-        value={regExpValue}
+        value={regex}
         onChange={onChangeRegExp}
         type="text"
         placeholder="RegExp"
       />
       <input
         className={style.stringMapperInput}
-        value={replaceValue}
+        value={replacement}
         onChange={onChangeReplace}
         type="text"
         placeholder="Replacement"
       />
       <button
         className={style.delStringMapperButton}
-        onClick={() => onDelete(id)}
+        onClick={onDelete}
       >
         -
       </button>
     </div>
   );
-};
+});
 
-interface IStringMappers {
-  id: string;
-  Component: FC<StringMapperProps>;
+interface StringMapProps {
+  nodeId: string;
+  data: any;
 }
 
-const StringMap = () => {
-  const [stringMappers, setStringMappers] = React.useState<IStringMappers[]>([
-    {
-      id: uuid4(),
-      Component: StringMapper,
-    },
-  ]);
+const StringMap: FC<StringMapProps> = memo(({ nodeId, data }) => {
+  const { setNodes } = useReactFlow();
+  const nodes = useNodes();
 
   const addStringMapper = () => {
-    setStringMappers((stringMappers) => [
-      ...stringMappers,
-      {
-        id: uuid4(),
-        Component: StringMapper,
-      },
-    ]);
+    const _nodes = nodes.map((node: any) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            params: {
+              ...node.data.params,
+              items: [
+                ...node.data.params.items,
+                ["", ""]
+              ]
+            },
+          },
+        };
+      }
+
+      return node;
+    });
+    setNodes(_nodes);
   };
 
-  const delStringMapper = (id: string) => {
-    if (stringMappers.length === 1) {
-      message.error("You can't delete the last string mapper");
-      return;
-    }
-    setStringMappers(stringMappers.filter((mapper) => mapper.id !== id));
-  };
+
 
   return (
     <div className={style.stringMap}>
       <div className={style.stringMappers}>
-        {stringMappers.map(({ id, Component }) => (
-          <div key={id}>
-            <Component id={id} onDelete={delStringMapper} />
+        {data?.params?.items?.map(([regex, replacement]: any, index: number) => (
+          <div key={index}>
+            <StringMapper regex={regex} replacement={replacement} id={index} nodeId={nodeId} />
           </div>
         ))}
       </div>
@@ -425,11 +480,11 @@ const StringMap = () => {
       </button>
     </div>
   );
-};
+});
 
 const renderHeader = ({ data }: any) => {
   return (
-    data?.func === "string_map" && (
+    data?.func === "remap_regex" && (
       <div className={style.header}>
         <div>
           <strong>{data?.label}</strong>
@@ -449,7 +504,7 @@ export const FuncNode: FC<FuncNodeProps> = memo(({ id, data }) => {
     <div className={`${style.funcNode} string_mapper`}>
       {renderHeader(data)}
       <div className={style.body}>
-        {data?.func === "string_map" && <StringMap />}
+        {data?.func === "remap_regex" && <StringMap nodeId={id} data={data} />}
         {Object.keys(data.input).map((param_name) => (
           <InputParam
             key={param_name}
