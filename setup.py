@@ -6,7 +6,7 @@ with open(Path(__file__).parent.absolute() / 'requirements.txt') as fp:
 
 setup(
     name='Piper',
-    version='1.0.0',
+    version='1.1.0',
     description='Flexible pipelines scheduler',
     author='David Kuryakin',
     author_email='dkuryakin@gmail.com',
