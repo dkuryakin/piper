@@ -152,17 +152,6 @@ const specMock = [
     },
     description: "Convert image with text to string and confidence.",
   },
-  {
-    func: "remap_regex",
-    input: {
-      value: { type: "string" },
-    },
-    output: {
-      type: "string",
-    },
-    params: {items: []},
-    description: "Match a string to the form specified in the RegExp",
-  },
 ];
 
 const nodeSpec = [
@@ -173,6 +162,23 @@ const nodeSpec = [
     width: 203,
     height: 123,
     zIndex: -1,
+    category: ["system"],
+  },
+  {
+    label: "Remap Regex",
+    type: "default",
+    extra_output: [],
+
+    func: "remap_regex",
+    input: {
+      value: { type: "string" },
+    },
+    output: {
+      type: "string",
+    },
+    params: {items: []},
+    description: "Match a string to the form specified in the RegExp",
+    category: ["system"],
   },
 ];
 
@@ -210,7 +216,7 @@ export const LeftSidebar: FC<LeftSidebarProps> = ({ specs_url }) => {
       <div className={style.description}>Functions</div>
       {specs?.map((nodeSpec: any, i: number) => (
         <div
-          className={`${style.node} ${style[nodeSpec.type] || ""}`}
+          className={`${style.node} ${style[nodeSpec.type] || ""} ${style["category-" + (nodeSpec.category || [""])[0]] || ""}`}
           onDragStart={(event) => onDragStart(event, nodeSpec)}
           draggable
           key={i}
