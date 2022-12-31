@@ -25,9 +25,9 @@ async def map(  # noqa
 
 
 @register
-async def remap_regex(source: str, items: List[Tuple[str, str]], default: str) -> str:
+async def remap_regex(value: str, items: List[Tuple[str, str]], default: str) -> str:
     for regex, target in items:
-        if re.fullmatch(regex, source):
+        if re.fullmatch(regex, value):
             return target
     return default
 
@@ -35,13 +35,13 @@ async def remap_regex(source: str, items: List[Tuple[str, str]], default: str) -
 @register
 async def case_regex(  # noqa
         data: Any,
-        source: str,
+        value: str,
         items: List[Tuple[str, Dict[str, Any]]],
         default: Dict[str, Any],
         __pipeline: Pipeline,
 ) -> Any:
     for regex, subspec in items:
-        if re.fullmatch(regex, source):
+        if re.fullmatch(regex, value):
             spec = subspec
             break
     else:
