@@ -42,6 +42,7 @@ def register(
         func: Optional[Callable[..., Awaitable[Any]]] = None,
         category: Optional[Union[Tuple[str, ...], List[str]]] = None,
 ) -> Callable[..., Awaitable[Any]]:
+    category = category or ["Default"]
     if func is None:
-        return partial(_register, category=category or ["default"])
-    return _register(func)
+        return partial(_register, category=category)
+    return _register(func=func, category=category)
