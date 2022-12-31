@@ -100,9 +100,10 @@ const InputParam: FC<InputParamProps> = ({ name, spec, handleId, nodeId }) => {
   const nodes = useNodes();
   const { setNodes, getNode, deleteElements } = useReactFlow();
   const targetEdge = edges.find((edge) => edge.targetHandle === handleId);
-  const inputValue = getNode(nodeId)?.data?.params?.[name] || "";
+  const params = getNode(nodeId)?.data?.params;
+  const inputValue = params?.[name] || "";
   const [value, setValue] = React.useState(inputValue);
-  const [checked, setChecked] = React.useState<boolean>(false);
+  const [checked, setChecked] = React.useState<boolean>(params?.hasOwnProperty(name));
 
   const onCheckboxChange = () => {
     setChecked(!checked);
