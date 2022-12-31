@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 from .decorators import register
 from .pipeline import Pipeline
@@ -25,7 +25,7 @@ async def map(  # noqa
 
 
 @register
-async def remap_regex(value: str, items: List[Tuple[str, str]], default: str) -> str:
+async def remap_regex(value: str, items: List[Union[Tuple[str, str], List[str]]], default: str) -> str:
     for regex, target in items:
         if re.fullmatch(regex, value):
             return target
